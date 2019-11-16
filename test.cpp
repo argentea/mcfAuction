@@ -194,8 +194,7 @@ int main(){
 	int tmpa = 0;
 	int tmpb = 0;
 	int tmpi = 0;
-	epsilon = 1000;
-	epsilon_factor = 0.5;
+	epsilon = 1;
 	for(int i = 0 ; i < SIZE; i++){
 		g[i] = graw[i];
 	}
