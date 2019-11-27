@@ -1,22 +1,34 @@
-IDIR = ../include
-ODIR = obj
+CXX=g++
+SHELL=/bin/bash
 
+DATADIR=../data
+LOGDIR=./log
 
-CC=gcc
-CFLAGS=-I${IDIR}
-DEPS = auction.h
-OBJ = auction.o
-objects := $(wildcard *.c)
+override PRETESTDATA=data1.min
+override PRELOG=data1.min
+PRELOG=data1.min
+LOGCOUNT=0
+TESTDATA=$(patsubst %,$(DATADIR)/%,$(PRETESTDATA))
+LOGNAME=$(patsubst %, $(LOGDIR)/%.log,$(PRELOG))
 
-.PHONY: all clean
+TESTPARAMETERS=1
 
-all: auction
+auction.out:auction.cpp
+	$(CXX) -o $@ $<
 
-%.o: %.c ${DEPS}
-	$(CC) -c -o $@ $< $(CFLAGS)
+test:auction.out
+	#ToDo Distingush between data file names when generate log names 
+	@echo "test start"
+	@echo "Generate log name"
+	$(eval LOGCOUNT=$(shell ls $(LOGDIR) |wc -l))
+	$(eval LOGNAME=$(patsubst %.log, %$(LOGCOUNT).log,$(LOGNAME)))
+	@echo -n "Log name is "
+	@echo $(LOGNAME)
+	./auction.out $(TESTPARAMETERS) < $(TESTDATA) > $(LOGNAME)
 
-auction: auction.o
-	$(CC) -o $@ $^ $(CFLAGS)
-
+.PHONY: clean cleanLog
 clean:
-	rm -r $(ODIR)/*.o *~ core ${INCDIR}/*~
+	@rm -f *.out
+
+cleanLog:
+	@rm -r $(LOGNAME)
