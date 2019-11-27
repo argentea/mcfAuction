@@ -5,9 +5,17 @@
 #define MAXMY 0x3f3f
 #define MAXITERATer 10000
 using namespace std;
+bool GDEBUG = 0;
+
+
 int epsilon;
 float epsilon_factor = 0.5;
+
+int C = 0;
+int Capacity = 0;
+
 int nodeNum;
+int edgeNum;
 int cost[SIZE][SIZE];
 int price[SIZE];
 int flow[SIZE][SIZE];
@@ -91,17 +99,11 @@ int initmy(){
 			break;
 		}
 		ti--;tj--;
-		cin >> lb[ti][tj] >> rb[ti][tj]>> cost[ti][tj] ;
-//		cost[ti][tj] %= 3000;
+		cin >> lb[ti][tj] >> rb[ti][tj]>> cost[ti][tj];
+		cost[ti][tj] %= 4000;
+		C = max(cost[ti][tj], C);
+		Capacity = max(rb[ti][tj], Capacity);
 	}
-/*
-	for(int i = 0; i < nodeNum; i++){
-		for(int j = 0; j < nodeNum; j++){
-			cin >> cost[i][j] >> lb[i][j] >> rb[i][j];
-			cost[i][j]*=nodeNum;
-		}
-	}
-*/
 	return nodeNum;
 }
 
@@ -197,22 +199,41 @@ bool check(){
 	return flag;
 }
 
+void cycleInit(){
+	int maxFlow = 0;
+	for(int i = 0; i < nodeNum; i++){
+		for(int j =0; j < nodeNum; j++){
+			if(cost[i][j] - price[i] + price[j] > 0){
+				g[i] -= rb[i][j];
+				g[j] += rb[i][j];
+				flow[i][j] = rb[i][j];
+			}
+		}
+	}
+}
 
-int main(){
+
+
+int main(int argc, char *argv[]){
+	if(argc != 1){
+		if(argv[1][0] == '1'){
+			GDEBUG = true;
+		}
+	}
 	initmy();
 	int iteratorNum = 0;
 	int allIterater = 0;
 	int tmpa = 0;
 	int tmpb = 0;
 	int tmpi = 0;
-	epsilon = 1000;
+	epsilon = C;
 	while(epsilon >= 1){
 		memset(flow, 0, sizeof(flow));
 		iteratorNum = 0;
 		for(int i = 0 ; i < SIZE; i++){
 			g[i] = graw[i];
 		}
-		cout << "check()!!!   " << !check() << "   iteratornum   " << iteratorNum << endl;
+		cycleInit();
 		while(!check()){
 			tmpb = 0;
 			pushMy();
@@ -223,13 +244,18 @@ int main(){
 				}
 			}
 			if(tmpb != tmpa){
-				cout << "iteratorNum:" << tmpa << "  to  "<<tmpb << "  is  " << iteratorNum - tmpi  << "  now iterateNum is  " << iteratorNum<<
+				cout << tmpa << "  to  "<<tmpb << "  is  " << tmpa - tmpb << "   iteratorNum is  " << iteratorNum - tmpi  << "  now iterateNum is  " << iteratorNum<<
 					"   epsilon is: " << epsilon << endl;
 				tmpi = iteratorNum;
 				tmpa = tmpb;
+			}else if(iteratorNum - tmpi > 2 * nodeNum){
+				break;
 			}
 
 			iteratorNum++;
+			if(tmpb < epsilon/2){
+				break;
+			}
 		}
 		int ans = 0;
 		for(int i = 0; i < nodeNum; i++){
@@ -237,16 +263,11 @@ int main(){
 				ans += flow[i][j]*cost[i][j];
 			}
 		}
+		cout << "EPSILON SCALING";
 		cout << "\nNUM\n " << iteratorNum << endl;
 		cout << "\n******************\nans: " << ans << "\n******************\n";
-		if(epsilon > 1){
-			printf("scale\n");
-			epsilon = epsilon*epsilon_factor;
-			cout << "epsilon !!!!!!!!!!!!!! now !!!!!!! is !!!!!" << epsilon << endl;
-		}
-		if(epsilon == 1){
-			break;
-		}
+		//todo use epsilon factor to reduce epsilon
+		epsilon/=2;
 	}
 	return 0;
 }

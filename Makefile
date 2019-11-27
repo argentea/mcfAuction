@@ -14,7 +14,7 @@ LOGNAME=$(patsubst %, $(LOGDIR)/%.log,$(PRELOG))
 TESTPARAMETERS=1
 
 auction.out:auction.cpp
-	$(CXX) -o $@ $<
+	@$(CXX) -o $@ $<
 
 test:auction.out
 	#ToDo Distingush between data file names when generate log names 
@@ -24,11 +24,11 @@ test:auction.out
 	$(eval LOGNAME=$(patsubst %.log, %$(LOGCOUNT).log,$(LOGNAME)))
 	@echo -n "Log name is "
 	@echo $(LOGNAME)
-	./auction.out $(TESTPARAMETERS) < $(TESTDATA) > $(LOGNAME)
+	@./auction.out $(TESTPARAMETERS) < $(TESTDATA) > $(LOGNAME)
 
 .PHONY: clean cleanLog
 clean:
 	@rm -f *.out
 
 cleanLog:
-	@rm -r $(LOGNAME)
+	@rm -r $(LOGDIR)/*
