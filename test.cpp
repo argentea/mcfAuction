@@ -202,12 +202,10 @@ int main(){
 	initmy();
 	int iteratorNum = 0;
 	int allIterater = 0;
-//	printCost();
 	int tmpa = 0;
 	int tmpb = 0;
 	int tmpi = 0;
 	epsilon = 1000;
-	epsilon_factor = 0.5;
 	while(epsilon >= 1){
 		memset(flow, 0, sizeof(flow));
 		iteratorNum = 0;
@@ -215,13 +213,8 @@ int main(){
 			g[i] = graw[i];
 		}
 		cout << "check()!!!   " << !check() << "   iteratornum   " << iteratorNum << endl;
-		while(!check() /* && iteratorNum < MAXITERATer*/){
+		while(!check()){
 			tmpb = 0;
-		//	std::cout << "****************\n"
-		//		<< "iteratorNum : " << iteratorNum << endl;
-		//	printFolw();
-		//	printPrice();
-		//	printGrow();
 			pushMy();
 			priceRise();
 				for(int i = 0; i < nodeNum; i++){
@@ -236,16 +229,13 @@ int main(){
 				tmpa = tmpb;
 			}
 
-	//		printNG();
 			iteratorNum++;
 		}
 		int ans = 0;
 		for(int i = 0; i < nodeNum; i++){
 			for(int j = 0; j < nodeNum; j++){
-	//			cout << flow[i][j] << "  ";
 				ans += flow[i][j]*cost[i][j];
 			}
-//			cout << endl;
 		}
 		cout << "\nNUM\n " << iteratorNum << endl;
 		cout << "\n******************\nans: " << ans << "\n******************\n";
