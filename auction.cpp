@@ -91,10 +91,10 @@ int initmy(){
 		graw[fid - 1] = g[fid -1];
 	}
 
-	int numEdge = 0;
 	int ti,tj;
 	while(true){
 		cin >> a >> ti >> tj;
+		edgeNum++;
 		if(ti == tj&&ti==0){
 			break;
 		}
@@ -248,7 +248,8 @@ int main(int argc, char *argv[]){
 					"   epsilon is: " << epsilon << endl;
 				tmpi = iteratorNum;
 				tmpa = tmpb;
-			}else if(iteratorNum - tmpi > 2 * nodeNum){
+			}else if(iteratorNum - tmpi > edgeNum + 2){
+				epsilon*=2;
 				break;
 			}
 
