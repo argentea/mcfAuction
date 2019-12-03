@@ -1,14 +1,15 @@
 #include<iostream>
 #include<memory.h>
 #include<algorithm>
-#define SIZE 512
+#define SIZE 256
 #define MAXMY 0x3f3f
 #define MAXITERATer 10000
 using namespace std;
 bool GDEBUG = 0;
+int costScale = 1;
 
 
-int epsilon;
+int epsilon = 1;
 float epsilon_factor = 0.5;
 
 int C = 0;
@@ -17,6 +18,7 @@ int Capacity = 0;
 int nodeNum;
 int edgeNum;
 int cost[SIZE][SIZE];
+int costRaw[SIZE][SIZE];
 int price[SIZE];
 int flow[SIZE][SIZE];
 int g[SIZE];
@@ -45,6 +47,18 @@ void printFolw(){
 		printf("\n");
 	}
 }
+void printPi(){
+	cout << "*********************\n"
+		<< "pi+\n"
+		<< "*********************\n";
+	for(int i = nodeNum-1; i >= 0; i--){
+		for(int j = nodeNum-1; j >= 0; j--){
+			printf("%d\t", cost[i][j] - price[i] + price[j]);
+		}
+		printf("\n");
+	}
+}
+
 void printPrice(){
 	cout << "*********************\n"
 		<< "price\n"
@@ -78,6 +92,7 @@ void printNG(){
 int initmy(){
 	cin >> nodeNum;
 	memset(cost, MAXMY, sizeof(cost));
+	memset(costRaw, MAXMY, sizeof(costRaw));
 	memset(price, 0, sizeof(price));
 	memset(graw, 0, sizeof(graw));
 	memset(flow, 0, sizeof(flow));
@@ -85,12 +100,15 @@ int initmy(){
 	int fid;
 	int aNUm;
 	cin >> aNUm;
+//	cout << "aNUm " << aNUm << endl;
 	for(int i = 0; i < aNUm; i++){
 		cin >> a >> fid;
 		cin >> g[fid-1];
 		graw[fid - 1] = g[fid -1];
-	}
+//		cout << a << " " << fid << " " << g[fid-1] << endl;
 
+	}
+	cout << "sdf\n";
 	int ti,tj;
 	while(true){
 		cin >> a >> ti >> tj;
@@ -99,11 +117,21 @@ int initmy(){
 			break;
 		}
 		ti--;tj--;
-		cin >> lb[ti][tj] >> rb[ti][tj]>> cost[ti][tj];
-		cost[ti][tj] %= 4000;
+		cin >> lb[ti][tj] >> rb[ti][tj]>>  cost[ti][tj] ;
+//		cout << a << "\t" << ti << " " << tj << " " << cost[ti][tj] <<" " << lb[ti][tj] << " " << rb[ti][tj] <<  endl;
+//		cost[ti][tj] *= nodeNum;
+		costRaw[ti][tj] = cost[ti][tj];
+//		cost[ti][tj] %= 4000;
 		C = max(cost[ti][tj], C);
 		Capacity = max(rb[ti][tj], Capacity);
 	}
+	int tmp = C;
+
+//	while((tmp -= (1 << costScale))>= 0){
+//		costScale++;
+//	}
+//	costScale-=4;
+
 	return nodeNum;
 }
 
@@ -114,15 +142,15 @@ int pushMy(){
 	int naCount = 0;
 	for(int i = 0; i <  nodeNum; i++){
 		for(int j = 0; j < nodeNum; j++){
-			if(price[i] == price[j] + cost[i][j] + epsilon){
+			if(cost[i][j]-price[i]+price[j]+epsilon==0&&g[i]>0){
 				pushListPo[poCount][0] = i;
 				pushListPo[poCount][1] = j;
 				poCount++;
 				continue;
 			}
-			if(price[i] == price[j] - cost[j][i] + epsilon){
-				pushListNa[naCount][0] = i;
-				pushListNa[naCount][1] = j;
+			if(cost[i][j]-price[i]+price[j]-epsilon==0&&g[j]>0){
+				pushListNa[naCount][0] = j;
+				pushListNa[naCount][1] = i;
 				naCount++;
 				continue;
 			}
@@ -168,11 +196,11 @@ int priceRise(){
 		for(int j = 0; j < nodeNum; j++){
 			if(nodesRisePrice[i]&&(!nodesRisePrice[j])){
 				if(flow[i][j] < rb[i][j]){
-					if(price[j] + cost[i][j] + epsilon - price[i] > 0)
+					if(price[j] + cost[i][j] + epsilon - price[i] >= 0)
 						minRise = min(price[j] + cost[i][j] + epsilon - price[i], minRise);
 				}
 				if(flow[j][i] > lb[j][i]){
-					if(price[j] - cost[j][i] + epsilon - price[i] > 0)
+					if(price[j] - cost[j][i] + epsilon - price[i] >= 0)
 						minRise = min(price[j] - cost[j][i] + epsilon - price[i], minRise);
 				}
 			}
@@ -197,6 +225,17 @@ bool check(){
 		}
 	}
 	return flag;
+}
+
+void costInit(){
+	for(int i = 0; i < nodeNum; i++){
+		for(int j = 0; j < nodeNum; j++){
+			if(costRaw[i][j] <= C){
+				cost[i][j] = costRaw[i][j] / (1 << costScale);
+			}
+		}
+	}
+	return;
 }
 
 void cycleInit(){
@@ -226,49 +265,51 @@ int main(int argc, char *argv[]){
 	int tmpa = 0;
 	int tmpb = 0;
 	int tmpi = 0;
-	epsilon = C;
-	while(epsilon >= 1){
-		memset(flow, 0, sizeof(flow));
+	costScale = 0;
+	while(costScale >= 0){
+//		memset(flow, 0, sizeof(flow));
+//		costInit();
 		iteratorNum = 0;
-		for(int i = 0 ; i < SIZE; i++){
-			g[i] = graw[i];
-		}
-		cycleInit();
+//		for(int i = 0 ; i < SIZE; i++){
+//			g[i] = graw[i];
+//		}
+//		cycleInit();
+		cout << "a\n";
+		printGrow();
 		while(!check()){
 			tmpb = 0;
 			pushMy();
 			priceRise();
-				for(int i = 0; i < nodeNum; i++){
+			if(iteratorNum - tmpi > 2000){
+//				printPi();
+				printPrice();
+				printGrow();
+			}
+			for(int i = 0; i < nodeNum; i++){
 				if(g[i] > 0){
 					tmpb+=g[i];
 				}
 			}
 			if(tmpb != tmpa){
 				cout << tmpa << "  to  "<<tmpb << "  is  " << tmpa - tmpb << "   iteratorNum is  " << iteratorNum - tmpi  << "  now iterateNum is  " << iteratorNum<<
-					"   epsilon is: " << epsilon << endl;
+					"  cost is: " << costScale << endl;
 				tmpi = iteratorNum;
-				tmpa = tmpb;
-			}else if(iteratorNum - tmpi > edgeNum + 2){
-				epsilon*=2;
-				break;
+				tmpa = tmpb;		
 			}
-
 			iteratorNum++;
-			if(tmpb < epsilon/2){
-				break;
-			}
 		}
+//		printFolw();
 		int ans = 0;
 		for(int i = 0; i < nodeNum; i++){
 			for(int j = 0; j < nodeNum; j++){
 				ans += flow[i][j]*cost[i][j];
 			}
 		}
-		cout << "EPSILON SCALING";
+		cout << "COST SCALING";
 		cout << "\nNUM\n " << iteratorNum << endl;
 		cout << "\n******************\nans: " << ans << "\n******************\n";
 		//todo use epsilon factor to reduce epsilon
-		epsilon/=2;
+		costScale--;
 	}
 	return 0;
 }

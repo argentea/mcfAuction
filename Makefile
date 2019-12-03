@@ -6,7 +6,6 @@ LOGDIR=./log
 
 override PRETESTDATA=data1.min
 override PRELOG=data1.min
-PRELOG=data1.min
 LOGCOUNT=0
 TESTDATA=$(patsubst %,$(DATADIR)/%,$(PRETESTDATA))
 LOGNAME=$(patsubst %, $(LOGDIR)/%.log,$(PRELOG))
