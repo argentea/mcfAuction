@@ -30,6 +30,7 @@ void printCost(){
 		<< "cost\n"
 		<< "********************\n";
 	for(int i  = nodeNum-1;i >= 0; i--){
+		cout << "i " << i  << " ";
 		for(int j = nodeNum-1; j >= 0; j--){
 			printf("%d\t", cost[i][j]);
 		}
@@ -108,7 +109,6 @@ int initmy(){
 //		cout << a << " " << fid << " " << g[fid-1] << endl;
 
 	}
-	cout << "sdf\n";
 	int ti,tj;
 	while(true){
 		cin >> a >> ti >> tj;
@@ -127,10 +127,13 @@ int initmy(){
 	}
 	int tmp = C;
 
-//	while((tmp -= (1 << costScale))>= 0){
-//		costScale++;
-//	}
-//	costScale-=4;
+	while((tmp -= (1 << costScale))>= 0){
+		costScale++;
+	}
+	costScale-=4;
+	cout << "************\n"
+		<< "CostScale    " << costScale
+		<< "*************\n";
 
 	return nodeNum;
 }
@@ -196,17 +199,22 @@ int priceRise(){
 		for(int j = 0; j < nodeNum; j++){
 			if(nodesRisePrice[i]&&(!nodesRisePrice[j])){
 				if(flow[i][j] < rb[i][j]){
-					if(price[j] + cost[i][j] + epsilon - price[i] >= 0)
+					if(price[j] + cost[i][j] + epsilon - price[i] >= 0){
 						minRise = min(price[j] + cost[i][j] + epsilon - price[i], minRise);
+					}
 				}
 				if(flow[j][i] > lb[j][i]){
-					if(price[j] - cost[j][i] + epsilon - price[i] >= 0)
+					if(price[j] - cost[j][i] + epsilon - price[i] >= 0){
 						minRise = min(price[j] - cost[j][i] + epsilon - price[i], minRise);
+					}
 				}
 			}
 		}
 	}
-
+	if(minRise == 0x7ffff){
+		minRise = 0;
+	}
+	
 //	cout << "minRise:  " << minRise << endl;
 	for(int i = 0; i < nodeNum; i++){
 		if(nodesRisePrice[i]){
@@ -227,13 +235,16 @@ bool check(){
 	return flag;
 }
 
-void costInit(){
+void costScalingInit(){
 	for(int i = 0; i < nodeNum; i++){
 		for(int j = 0; j < nodeNum; j++){
 			if(costRaw[i][j] <= C){
 				cost[i][j] = costRaw[i][j] / (1 << costScale);
 			}
 		}
+	}
+	for(int i = 0; i < nodeNum; i++){
+		price[i]*=2;
 	}
 	return;
 }
@@ -242,7 +253,7 @@ void cycleInit(){
 	int maxFlow = 0;
 	for(int i = 0; i < nodeNum; i++){
 		for(int j =0; j < nodeNum; j++){
-			if(cost[i][j] - price[i] + price[j] > 0){
+			if(cost[i][j] - price[i] + price[j] + epsilon <= 0){
 				g[i] -= rb[i][j];
 				g[j] += rb[i][j];
 				flow[i][j] = rb[i][j];
@@ -265,30 +276,37 @@ int main(int argc, char *argv[]){
 	int tmpa = 0;
 	int tmpb = 0;
 	int tmpi = 0;
-	costScale = 0;
 	while(costScale >= 0){
-//		memset(flow, 0, sizeof(flow));
-//		costInit();
+		memset(flow, 0, sizeof(flow));
+		for(int i = 0 ; i < SIZE; i++){
+			g[i] = graw[i];
+		}
+		costScalingInit();
+		cycleInit();
 		iteratorNum = 0;
-//		for(int i = 0 ; i < SIZE; i++){
-//			g[i] = graw[i];
-//		}
-//		cycleInit();
-		cout << "a\n";
 		printGrow();
+		printCost();
 		while(!check()){
 			tmpb = 0;
 			pushMy();
 			priceRise();
-			if(iteratorNum - tmpi > 2000){
+			if(iteratorNum - tmpi > 500){
+//				cout << "iteratorNum is " << iteratorNum << endl;
 //				printPi();
-				printPrice();
-				printGrow();
+//				printPrice();
+//				printGrow();
 			}
 			for(int i = 0; i < nodeNum; i++){
-				if(g[i] > 0){
+				if(g[i] >= 0){
 					tmpb+=g[i];
-				}
+				}/*else if(i==254){
+					cout << "nagetive!!!  " << i << endl;
+					for(int j = nodeNum-1; j >= 0; j--){
+						if( cost[j][i] - price[j] + price[i] < 1000000)
+						printf("j: %d %d\t",j,  cost[j][i] - price[j] + price[i]);
+					}
+					printf("\n");
+				}*/
 			}
 			if(tmpb != tmpa){
 				cout << tmpa << "  to  "<<tmpb << "  is  " << tmpa - tmpb << "   iteratorNum is  " << iteratorNum - tmpi  << "  now iterateNum is  " << iteratorNum<<
@@ -305,7 +323,7 @@ int main(int argc, char *argv[]){
 				ans += flow[i][j]*cost[i][j];
 			}
 		}
-		cout << "COST SCALING";
+		cout << "COST SCALING" << costScale;
 		cout << "\nNUM\n " << iteratorNum << endl;
 		cout << "\n******************\nans: " << ans << "\n******************\n";
 		//todo use epsilon factor to reduce epsilon
