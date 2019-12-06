@@ -271,6 +271,7 @@ int main(int argc, char *argv[]){
 		}
 	}
 	initmy();
+	int totalIteratorNum = 0;
 	int iteratorNum = 0;
 	int allIterater = 0;
 	int tmpa = 0;
@@ -284,22 +285,22 @@ int main(int argc, char *argv[]){
 		costScalingInit();
 		cycleInit();
 		iteratorNum = 0;
-		printGrow();
-		printCost();
+//		printGrow();
+//		printCost();
 		while(!check()){
 			tmpb = 0;
 			pushMy();
 			priceRise();
-			if(iteratorNum - tmpi > 500){
+//			if(iteratorNum - tmpi > 500){
 //				cout << "iteratorNum is " << iteratorNum << endl;
 //				printPi();
 //				printPrice();
 //				printGrow();
-			}
-			for(int i = 0; i < nodeNum; i++){
+//			}
+/*			for(int i = 0; i < nodeNum; i++){
 				if(g[i] >= 0){
 					tmpb+=g[i];
-				}/*else if(i==254){
+				}*//*else if(i==254){
 					cout << "nagetive!!!  " << i << endl;
 					for(int j = nodeNum-1; j >= 0; j--){
 						if( cost[j][i] - price[j] + price[i] < 1000000)
@@ -307,14 +308,15 @@ int main(int argc, char *argv[]){
 					}
 					printf("\n");
 				}*/
-			}
+/*			}
 			if(tmpb != tmpa){
 				cout << tmpa << "  to  "<<tmpb << "  is  " << tmpa - tmpb << "   iteratorNum is  " << iteratorNum - tmpi  << "  now iterateNum is  " << iteratorNum<<
 					"  cost is: " << costScale << endl;
 				tmpi = iteratorNum;
 				tmpa = tmpb;		
-			}
+			}*/
 			iteratorNum++;
+			totalIteratorNum++;
 		}
 //		printFolw();
 		int ans = 0;
@@ -324,7 +326,7 @@ int main(int argc, char *argv[]){
 			}
 		}
 		cout << "COST SCALING" << costScale;
-		cout << "\nNUM\n " << iteratorNum << endl;
+		cout << "\nNUM:   " << iteratorNum << "  totalNUM:  " << totalIteratorNum<< endl;
 		cout << "\n******************\nans: " << ans << "\n******************\n";
 		//todo use epsilon factor to reduce epsilon
 		costScale--;
