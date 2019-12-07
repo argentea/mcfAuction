@@ -114,10 +114,10 @@ int initmy(){
 	int ti,tj;
 	while(true){
 		cin >> a >> ti >> tj;
-		edgeNum++;
 		if(ti == tj&&ti==0){
 			break;
 		}
+		edgeNum++;
 		ti--;tj--;
 		cin >> lb[ti][tj] >> rb[ti][tj]>>  cost[ti][tj] ;
 //		cout << a << "\t" << ti << " " << tj << " " << cost[ti][tj] <<" " << lb[ti][tj] << " " << rb[ti][tj] <<  endl;
@@ -132,9 +132,11 @@ int initmy(){
 	while((tmp -= (1 << costScale))>= 0){
 		costScale++;
 	}
+	cout << "*************\n"
+		<< "EdgeNum:  " << edgeNum << endl;
 	costScale-=4;
 	cout << "************\n"
-		<< "CostScale    " << costScale
+		<< "CostScale    " << costScale << endl
 		<< "*************\n";
 
 	return nodeNum;
