@@ -7,6 +7,8 @@
 using namespace std;
 bool GDEBUG = 0;
 int costScale = 1;
+int scalingFactor = 1;
+int gdelta = 0;
 
 
 int epsilon = 1;
@@ -244,7 +246,7 @@ void costScalingInit(){
 		}
 	}
 	for(int i = 0; i < nodeNum; i++){
-		price[i]*=2;
+		price[i]*=(1 << gdelta);
 	}
 	return;
 }
@@ -277,6 +279,7 @@ int main(int argc, char *argv[]){
 	int tmpa = 0;
 	int tmpb = 0;
 	int tmpi = 0;
+	scalingFactor = 2;
 	while(costScale >= 0){
 		memset(flow, 0, sizeof(flow));
 		for(int i = 0 ; i < SIZE; i++){
@@ -329,7 +332,12 @@ int main(int argc, char *argv[]){
 		cout << "\nNUM:   " << iteratorNum << "  totalNUM:  " << totalIteratorNum<< endl;
 		cout << "\n******************\nans: " << ans << "\n******************\n";
 		//todo use epsilon factor to reduce epsilon
-		costScale--;
+		if(costScale == 0){
+			break;
+		}
+		gdelta = costScale - max(0, costScale - scalingFactor);
+		cout << "gdelta:  " << gdelta << endl;
+		costScale = max(0, costScale - scalingFactor);
 	}
 	return 0;
 }
