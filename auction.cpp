@@ -2,6 +2,7 @@
 #include<memory.h>
 #include<algorithm>
 #define SIZE 256
+#define EDGESIZE 2048
 #define MAXMY 0x3f3f
 #define MAXITERATer 10000
 using namespace std;
@@ -19,6 +20,7 @@ int Capacity = 0;
 
 int nodeNum;
 int edgeNum;
+int edges[EDGESIZE][2];
 int cost[SIZE][SIZE];
 int costRaw[SIZE][SIZE];
 int price[SIZE];
@@ -117,8 +119,11 @@ int initmy(){
 		if(ti == tj&&ti==0){
 			break;
 		}
-		edgeNum++;
 		ti--;tj--;
+		edges[edgeNum][0] = ti;
+		edges[edgeNum][1] = tj;
+		edgeNum++;
+
 		cin >> lb[ti][tj] >> rb[ti][tj]>>  cost[ti][tj] ;
 //		cout << a << "\t" << ti << " " << tj << " " << cost[ti][tj] <<" " << lb[ti][tj] << " " << rb[ti][tj] <<  endl;
 //		cost[ti][tj] *= nodeNum;
@@ -147,7 +152,24 @@ int pushMy(){
 	int pushListNa[SIZE][2];
 	int poCount = 0;
 	int naCount = 0;
-	for(int i = 0; i <  nodeNum; i++){
+	int i, j;
+	for(int k = 0; k < EDGESIZE; k++){
+		i = edges[k][0];
+		j = edges[k][1];
+		if(cost[i][j]-price[i]+price[j]+epsilon==0&&g[i]>0){
+			pushListPo[poCount][0] = i;
+			pushListPo[poCount][1] = j;
+			poCount++;
+			continue;
+		}
+		if(cost[i][j]-price[i]+price[j]-epsilon==0&&g[j]>0){
+			pushListNa[naCount][0] = j;
+			pushListNa[naCount][1] = i;
+			naCount++;
+			continue;
+		}
+	}
+/*	for(int i = 0; i <  nodeNum; i++){
 		for(int j = 0; j < nodeNum; j++){
 			if(cost[i][j]-price[i]+price[j]+epsilon==0&&g[i]>0){
 				pushListPo[poCount][0] = i;
@@ -163,9 +185,10 @@ int pushMy(){
 			}
 		}
 	}
-
+*/
 	int tmpi,tmpj,delta;
 
+//	cout << "poCount:  " << poCount << "   naCount:  " << naCount << endl;
 	for(int i = 0; i < poCount; i++){
 		tmpi = pushListPo[i][0];
 		tmpj = pushListPo[i][1];
@@ -187,7 +210,7 @@ int pushMy(){
 	return 0;
 }
 
-
+//一定是从i流向j
 int priceRise(){
 	bool nodesRisePrice[SIZE];
 	int minRise = 0x7ffff;
@@ -198,7 +221,30 @@ int priceRise(){
 			nodesRisePrice[i] = true;
 		}
 	}
+	int i, j, swap;
+	for(int k = 0; k < EDGESIZE; k++){
+		i = edges[k][0];
+		j = edges[k][1];
+		if(nodesRisePrice[i]!=nodesRisePrice[j]){
+			if(nodesRisePrice[j]){
+				swap = i;
+				i = j;
+				j = swap;
+			}
+			if(flow[i][j] < rb[i][j]){
+				if(price[j] + cost[i][j] + epsilon - price[i] >= 0){
+					minRise = min(price[j] + cost[i][j] + epsilon - price[i], minRise);
+				}
+			}
+			if(flow[j][i] > lb[j][i]){
+				if(price[j] - cost[j][i] + epsilon - price[i] >= 0){
+					minRise = min(price[j] - cost[j][i] + epsilon - price[i], minRise);
+				}
+			}
+		}
+	}
 	
+	/*
 	for(int i = 0; i < nodeNum; i++){
 		for(int j = 0; j < nodeNum; j++){
 			if(nodesRisePrice[i]&&(!nodesRisePrice[j])){
@@ -215,6 +261,7 @@ int priceRise(){
 			}
 		}
 	}
+	*/
 	if(minRise == 0x7ffff){
 		minRise = 0;
 	}
@@ -305,15 +352,15 @@ int main(int argc, char *argv[]){
 /*			for(int i = 0; i < nodeNum; i++){
 				if(g[i] >= 0){
 					tmpb+=g[i];
-				}*//*else if(i==254){
+				}else if(i==244){
 					cout << "nagetive!!!  " << i << endl;
 					for(int j = nodeNum-1; j >= 0; j--){
 						if( cost[j][i] - price[j] + price[i] < 1000000)
 						printf("j: %d %d\t",j,  cost[j][i] - price[j] + price[i]);
 					}
 					printf("\n");
-				}*/
-/*			}
+				}
+			}
 			if(tmpb != tmpa){
 				cout << tmpa << "  to  "<<tmpb << "  is  " << tmpa - tmpb << "   iteratorNum is  " << iteratorNum - tmpi  << "  now iterateNum is  " << iteratorNum<<
 					"  cost is: " << costScale << endl;
