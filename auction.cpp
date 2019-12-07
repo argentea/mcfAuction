@@ -9,7 +9,7 @@ bool GDEBUG = 0;
 
 
 int epsilon;
-float epsilon_factor = 0.5;
+int epsilon_factor = 2;
 
 int C = 0;
 int Capacity = 0;
@@ -245,6 +245,7 @@ int main(int argc, char *argv[]){
 	int tmpb = 0;
 	int tmpi = 0;
 	epsilon = C/16;
+	epsilon_factor = 16;
 	while(epsilon >= 1){
 		memset(flow, 0, sizeof(flow));
 		for(int i = 0 ; i < SIZE; i++){
@@ -280,7 +281,10 @@ int main(int argc, char *argv[]){
 		cout << "\nNUM:   " << iteratorNum << "  totalNUM:  " << totalIteratorNum<< endl;
 		cout << "\n******************\nans: " << ans << "\n******************\n";
 		//todo use epsilon factor to reduce epsilon
-		epsilon/=2;
+		if(epsilon == 0){
+			break;
+		}
+		epsilon = max(0, epsilon/epsilon_factor);
 	}
 	return 0;
 }
