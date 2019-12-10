@@ -3,6 +3,7 @@
 #include<ctime>
 #include<memory.h>
 #include<algorithm>
+#define NUM_THREADS 16
 #define SIZE 256
 #define EDGESIZE 2048
 #define MAXMY 0x3f3f
@@ -154,8 +155,9 @@ int pushMy(){
 	int pushListNa[SIZE][2];
 	int poCount = 0;
 	int naCount = 0;
-	int i, j;
+//#pragma omp parallel for num_threads (NUM_THREADS) reduction(+:poCount) reduction(+:naCount)
 	for(int k = 0; k < EDGESIZE; k++){
+		int i, j;
 		i = edges[k][0];
 		j = edges[k][1];
 		if(cost[i][j]-price[i]+price[j]+epsilon==0&&g[i]>0){
@@ -223,8 +225,9 @@ int priceRise(){
 			nodesRisePrice[i] = true;
 		}
 	}
-	int i, j, swap;
+#pragma omp parallel for num_threads (NUM_THREADS) reduction(min:minRise)
 	for(int k = 0; k < EDGESIZE; k++){
+		int i, j, swap,tmpa,tmpb;
 		i = edges[k][0];
 		j = edges[k][1];
 		if(nodesRisePrice[i]!=nodesRisePrice[j]){
@@ -234,13 +237,19 @@ int priceRise(){
 				j = swap;
 			}
 			if(flow[i][j] < rb[i][j]){
-				if(price[j] + cost[i][j] + epsilon - price[i] >= 0){
-					minRise = min(price[j] + cost[i][j] + epsilon - price[i], minRise);
+				tmpb =  price[j] + cost[i][j] + epsilon - price[i];
+				if(tmpb >= 0){
+					if(minRise > tmpb){
+						minRise = tmpb;
+					}
 				}
 			}
 			if(flow[j][i] > lb[j][i]){
-				if(price[j] - cost[j][i] + epsilon - price[i] >= 0){
-					minRise = min(price[j] - cost[j][i] + epsilon - price[i], minRise);
+				tmpa = price[j] - cost[j][i] + epsilon - price[i];
+				if(tmpa >= 0){
+					if(minRise > tmpa){
+						minRise = tmpa;
+					}
 				}
 			}
 		}

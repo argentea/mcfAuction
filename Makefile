@@ -13,7 +13,7 @@ LOGNAME=$(patsubst %, $(LOGDIR)/%.log,$(PRELOG))
 TESTPARAMETERS=1
 
 auction.out:auction.cpp
-	@$(CXX) -o $@ $<
+	@$(CXX) $< -fopenmp -o $@
 
 test:auction.out
 	#ToDo Distingush between data file names when generate log names 
