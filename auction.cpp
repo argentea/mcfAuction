@@ -1,4 +1,6 @@
 #include<iostream>
+#include<chrono>
+#include<ctime>
 #include<memory.h>
 #include<algorithm>
 #define SIZE 256
@@ -321,7 +323,11 @@ int main(int argc, char *argv[]){
 			GDEBUG = true;
 		}
 	}
+	typedef chrono::time_point<chrono::system_clock> timePoint;
+	timePoint start,mid,end;
+	start = chrono::system_clock::now();
 	initmy();
+	mid = chrono::system_clock::now();
 	int totalIteratorNum = 0;
 	int iteratorNum = 0;
 	int allIterater = 0;
@@ -388,5 +394,9 @@ int main(int argc, char *argv[]){
 		cout << "gdelta:  " << gdelta << endl;
 		costScale = max(0, costScale - scalingFactor);
 	}
+	end = chrono::system_clock::now();
+	chrono::duration<double> initTime = mid - start;
+	chrono::duration<double> caculateTime = end - mid;
+	cout << "initTime:  " << initTime.count() << "   caculateTime:  " << caculateTime.count() << endl;
 	return 0;
 }
