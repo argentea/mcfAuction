@@ -351,6 +351,7 @@ int main(int argc, char *argv[]){
 		}
 		costScalingInit();
 		cycleInit();
+		cerr << costScale << endl;
 		iteratorNum = 0;
 //		printGrow();
 //		printCost();
