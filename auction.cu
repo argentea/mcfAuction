@@ -12,38 +12,136 @@
 #define MAXMY 0x3f3f
 #define SIZE 256
 #define EDGESIZE 2048
+#define DEBUG 1
+using namespace std;
 
-__global__ void __launchbounds__(1024, 4)
+__device__ unsigned int justForTest = 0;
+__device__ void dcostScalingInit(
+		const int costScale,
+		const int gdelta,
+		const int ledge,
+		const int redge,
+		const int lnode,
+		const int rnode,
+		const int* edges,
+		const int* costRaw,
+		int* cost,
+		int* price){
+	int ti,tj;
+	for(int i = ledge; i < redge; i++){
+		ti = edges[i*2 + 0];
+		tj = edges[i*2 + j];
+		if(costRaw 
+}
+__global__ void __launch_bounds__(1024, 1)
 auction_algorithm_kernel(
 		const int knumNodes,
 		const int knumEdges,
+		const int kthreadNum,
 
 		const int* kedges,
-		const int* kcost,
+		int* kcost,
 		const int* kcostRaw,
-		const int* kg,
+		int* kg,
 		const int* kgraw,
 		const int* klb,
 		const int* krb,
 		const int* kprice,
-		const int* kflow){
+		int* kflow){
 	const int threadId = threadIdx.x;
+#if DEBUG
+//	if(threadId == 0){
+//		printf("in kernel\n");
+//	}
+//	printf("threadId: %d\n", threadId);
+#endif
+	int edgesDivThread;
+	int edgesModThread;
+	//[edgesl,edgesr) is the range of edges that the thread produre
+	int ledges;
+	int redges;
+
+	int nodesDivThread;
+	int nodesModThread;
+	int lnodes;
+	int rnodes;
+
 	int totalIteratorNum = 0;
 	int iteratorNum = 0;
 	int allIterater = 0;
 	int tmpa = 0;
 	int tmpb = 0;
 	int tmpi = 0;
-	scalingFactor = 2;
+	int scalingFactor = 2;
 	int costScale = 9;
+	int gdelta = 0;
+
+	int kti;
+	int ktj;
+
+	edgesDivThread = knumEdges/kthreadNum;
+	edgesModThread = knumEdges%kthreadNum;
+	
+	if(threadId < edgesModThread){
+		ledges = threadId*(edgesDivThread + 1);
+		redges = (threadId + 1)*(edgesDivThread + 1);
+	}else {
+		ledges = threadId*edgesDivThread + edgesModThread;
+		redges = (threadId + 1)*edgesDivThread + edgesModThread;
+	}
+	
+	nodesDivThread = knumNodes/kthreadNum;
+	nodesModThread = knumNodes%kthreadNum;
+
+	if(threadId < nodesModThread){
+		lnodes = threadId*(nodesDivThread + 1);
+		rnodes = (threadId + 1)*(nodesDivThread + 1);
+	}else{
+		lnodes = threadId*nodesDivThread + nodesModThread;
+		rnodes = (threadId + 1)*nodesDivThread + nodesModThread;
+	}
+#if DEBUG
+//	printf("threadId: %d, ledges: %d, redges: %d\n", threadId, ledges, redges);
+//	__syncthreads();
+//	for(int i = ledges; i < redges; i++){
+//		kflow[kedges[i*2 + 0] * knumNodes + kedges[i*2 + 1]] = atomicAdd(&justForTest, 1);
+//		printf("%d\n", kflow[kedges[i*2 + 0] * knumNodes + kedges[i*2 + 1]]);
+//	}
+//	__syncthreads();
+#endif
+	
 	while(costScale >= 0){
+		int ktmp = 1<<costScale;
+
+		for(int i = ledges; i < redges; i++){
+			kti = kedges[i*2 + 0];
+			ktj = kedges[i*2 + 1];
+			kflow[kti * knumNodes + ktj] = 0;
+			if(kcostRaw[kti*knumNodes + ktj] <= C){
+				kcost[kti*knumNodes + ktj] = kcostRaw[kti*knumNodes + ktj]/ktmp;
+			}
+		}
+		for(int i = lnodes; i < rnodes; i++){
+			kprice[i]*=(1 << gdelta);
+		}
+
+
+
+	}
+
 		
+
+
+	if(threadId == 0)
+	{
+		printf("kenerl end\n");
 	}
 }
 
 void run_auction(
 		int numNodes,
 		int numEdges,
+		int threadNum,
 
 		int* hedges,
 		int* hcost,
@@ -52,6 +150,7 @@ void run_auction(
 		int* hrb,
 
 		int* hflow){
+	cout << "start run_auction\n";
 	int* dedges;
 	int* dcost;
 	int* dcostRaw;
@@ -89,10 +188,12 @@ void run_auction(
 	cudaMemcpy(drb, hrb, SIZE*SIZE*sizeof(int), cudaMemcpyHostToDevice);
 
 	cudaProfilerStart();
-	auction_algorithm_kernel<<<1,EDGESIZE>>>
+	cout << "start kernel\n";
+	auction_algorithm_kernel<<<1,threadNum>>>
 		(
 		numNodes,
 		numEdges,
+		threadNum,
 		dedges,
 		dcost,
 		dcostRaw,
@@ -108,9 +209,10 @@ void run_auction(
 	cudaMemcpy(hflow, dflow, SIZE*SIZE*sizeof(int), cudaMemcpyDeviceToHost);
 	
 	int ans = 0;
-	for(int i = 0; i < nodeNum; i++){
-		for(int j = 0; j < nodeNum; j++){
-			ans += hflow[i*nodeNum + j]*hcost[i*nodeNum + j];
+	for(int i = 0; i < numNodes; i++){
+		for(int j = 0; j < numNodes; j++){
+//			ans += hflow[i*numNodes + j]*hcost[i*numNodes+ j];
+//			cout << hflow[i*numNodes + j] << " ";
 		}
 	}
 	cout << "ans:  " << ans << endl;
@@ -124,6 +226,7 @@ void initmy(
 		int *hg,
 		int *lb,
 		int *rb){
+	cout << "start read in graph..\n";
 	int tnumNodes;
 	int tCapacity = 0;
 	int tmaxCost = 0;
@@ -138,10 +241,11 @@ void initmy(
 //	cout << "aNUm " << aNUm << endl;
 	for(int i = 0; i < aNUm; i++){
 		cin >> a >> fid;
-		cin >> g[fid-1];
+		cin >> hg[fid-1];
 //		cout << a << " " << fid << " " << g[fid-1] << endl;
 	}
 	int ti,tj;
+	int edgeNum = 0;
 	while(true){
 		cin >> a >> ti >> tj;
 		if(ti == tj&&ti==0){
@@ -153,14 +257,17 @@ void initmy(
 		edgeNum++;
 
 		cin >> lb[ti*SIZE + tj] >> rb[ti*SIZE + tj] >>  cost[ti*SIZE + tj] ;
-//		cout << a << "\t" << ti << " " << tj << " " << cost[ti][tj] <<" " << lb[ti][tj] << " " << rb[ti][tj] <<  endl;
+//		cout << a << "\t" << ti << " " << tj << " " << cost[ti*SIZE + tj] <<" " << lb[ti*SIZE + tj] << " " << rb[ti*SIZE + tj] <<  endl;
 //		cost[ti][tj] *= nodeNum;
 //		cost[ti][tj] %= 4000;
 		tmaxCost = max(cost[ti*SIZE + tj], tmaxCost);
 		tCapacity = max(rb[ti*SIZE + tj], tCapacity);
 	}
+	cout << "read end\n";
+}
 
 int main(int argc, char *argv[]){
+	int threadNum = 1024;
 	int numNodes = SIZE;
 	int numEdges = EDGESIZE;
 	int *hedges = new int[EDGESIZE*2];
@@ -173,16 +280,17 @@ int main(int argc, char *argv[]){
 	memset(hflow, 0, sizeof(hflow));
 
 	initmy(
-		*hedges,
-		*hcost,
-		*hg,
-		*hlb,
-		*hrb
+		hedges,
+		hcost,
+		hg,
+		hlb,
+		hrb
 	);
 
 	run_auction(
 		numNodes,
 		numEdges,
+		threadNum,
 
 		hedges,
 		hcost,
