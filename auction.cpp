@@ -353,7 +353,7 @@ int main(int argc, char *argv[]){
 		cycleInit();
 		cerr << costScale << endl;
 		iteratorNum = 0;
-//		printGrow();
+		printGrow();
 //		printCost();
 		while(!check()){
 			tmpb = 0;
@@ -390,7 +390,7 @@ int main(int argc, char *argv[]){
 		int ans = 0;
 		for(int i = 0; i < nodeNum; i++){
 			for(int j = 0; j < nodeNum; j++){
-				ans += flow[i][j]*cost[i][j];
+				ans += flow[i][j]*costRaw[i][j];
 			}
 		}
 		cout << "COST SCALING" << costScale;

@@ -34,7 +34,7 @@
 ################################################################################
 
 # Location of the CUDA Toolkit
-CUDA_PATH ?= /usr/local/cuda-10.1
+CUDA_PATH ?= /usr/local/cuda-10.2
 
 ##############################
 # start deprecated interface #
@@ -187,18 +187,26 @@ ifneq ($(TARGET_ARCH),$(HOST_ARCH))
                 CCFLAGS += --sysroot=$(TARGET_FS)
             endif
             LDFLAGS += --sysroot=$(TARGET_FS)
-            LDFLAGS += -rpath-link=$(TARGET_FS)/lib -L $(TARGET_FS)/lib
-            LDFLAGS += -rpath-link=$(TARGET_FS)/usr/lib -L $(TARGET_FS)/usr/lib
-            LDFLAGS += -rpath-link=$(TARGET_FS)/usr/lib/aarch64-linux-gnu -L $(TARGET_FS)/usr/lib/aarch64-linux-gnu
+            LDFLAGS += -rpath-link=$(TARGET_FS)/lib -L$(TARGET_FS)/lib
+            LDFLAGS += -rpath-link=$(TARGET_FS)/lib/aarch64-linux-gnu -L$(TARGET_FS)/lib/aarch64-linux-gnu
+            LDFLAGS += -rpath-link=$(TARGET_FS)/usr/lib -L$(TARGET_FS)/usr/lib
+            LDFLAGS += -rpath-link=$(TARGET_FS)/usr/lib/aarch64-linux-gnu -L$(TARGET_FS)/usr/lib/aarch64-linux-gnu
             LDFLAGS += --unresolved-symbols=ignore-in-shared-libs
-            CCFLAGS += -isystem=$(TARGET_FS)/usr/include
-            CCFLAGS += -isystem=$(TARGET_FS)/usr/include/aarch64-linux-gnu
+            CCFLAGS += -isystem=$(TARGET_FS)/usr/include  -I$(TARGET_FS)/usr/include
+            CCFLAGS += -isystem=$(TARGET_FS)/usr/include/aarch64-linux-gnu -I$(TARGET_FS)/usr/include/aarch64-linux-gnu
         endif
     endif
     ifeq ($(TARGET_ARCH)-$(TARGET_OS),aarch64-qnx)
         CCFLAGS += -DWIN_INTERFACE_CUSTOM -I/usr/include/aarch64-qnx-gnu
         LDFLAGS += -lsocket
         LDFLAGS += -rpath=/usr/lib/aarch64-qnx-gnu -L/usr/lib/aarch64-qnx-gnu
+        ifneq ($(TARGET_FS),)
+            LDFLAGS += -rpath=$(TARGET_FS)/usr/lib -L $(TARGET_FS)/usr/lib
+            LDFLAGS += -rpath=$(TARGET_FS)/usr/libnvidia -L $(TARGET_FS)/usr/libnvidia
+        endif
+        ifdef TARGET_OVERRIDE # cuda toolkit targets override
+            NVCCFLAGS += -target-dir $(TARGET_OVERRIDE)
+        endif
     endif
 endif
 
