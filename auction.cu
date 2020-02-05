@@ -9,17 +9,21 @@
 #include <vector>
 
 #include <chrono>
-#define MAXMY 0x3f3f
+#define MAXMY 0x3f3f3f3f
 #define SIZE 256
 #define EDGESIZE 2048
 #define DEBUG 1
 #define FULLDEBUG 0
 using namespace std;
 __device__ int kflag;
+#if DEBUG
 __device__ int tans;
+#endif
 __device__ int minRise;
-__device__ int kpushListPo[SIZE];
-__device__ int kpushListNa[SIZE];
+__device__ int kpoCount;
+__device__ int knaCount;
+__device__ int kpushListPo[SIZE][2];
+__device__ int kpushListNa[SIZE][2];
 __device__ bool knodesRisePrice[SIZE];
 __device__ void kcheck(
 		const int* kg,
@@ -36,6 +40,7 @@ __device__ void kcheck(
 __device__ void printNodes(const int* nodes, int numNodes, const char* name){
 	printf("*******************\n");
 	printf(name);
+	printf("\n");
 	for(int i = 0; i < numNodes; i++){
 		printf("%d\t", nodes[i]);
 	}
@@ -81,6 +86,7 @@ __device__ void dcostScalingInit(
 	}
 	return;
 }
+//pushlist is not good
 __device__ void pushFlow(
 		const int lnodes,
 		const int rnodes,
@@ -96,40 +102,72 @@ __device__ void pushFlow(
 		const int* kedges,
 		int* kg
 		){
-	for(int i = lnodes; i < rnodes; i++){
-		kpushListPo[i] = -1;
-		kpushListNa[i] = -1;
+#if FULLDEBUG
+	if(threadIdx.x ==0){
+		printf("in pushFlow\n");
 	}
+	__syncthreads();
+#endif
+	if(threadIdx.x ==0){
+		kpoCount = 0;
+		knaCount = 0;
+	}
+#if FULLDEBUG
+	if(threadIdx.x ==0){
+		printf("init pushList\n");
+	}
+	__syncthreads();
+#endif
 	for(int i = ledges; i < redges; i++){
-		int ti,tj;
-		ti = kedges[i*knumNodes + 0];
-		tj = kedges[i*knumNodes + 1];
+		int ti,tj,tindex;
+		ti = kedges[i*2 + 0];
+		tj = kedges[i*2 + 1];
 		if(kcost[ti*knumNodes + tj] - kprice[ti] + kprice[tj] + epsilon == 0&&kg[ti] >0){
-			atomicExch(kpushListPo + ti, tj);
+			tindex = atomicAdd(&kpoCount, 1);
+			kpushListPo[tindex][0] = ti;
+			kpushListPo[tindex][1] = tj;
 			continue;
 		}
 		if(kcost[ti*knumNodes + tj] - kprice[ti] + kprice[tj] - epsilon == 0&&kg[tj] > 0){
-			atomicExch(kpushListNa + tj, ti);
+			tindex = atomicAdd(&knaCount, 1);
+			kpushListNa[tindex][0] = tj;
+			kpushListNa[tindex][1] = ti;
 			continue;
 		}
 	}
-	int delta;
-	for(int i = lnodes; i < rnodes; i++){
-		if(kpushListPo[i] != -1){
-//			delta = min(kg[i], krb[i*knumNodes + kpushListPo[i]] - kflow[i*knumNodes + kpushListPo[i]]);
-			kflow[i*knumNodes + kpushListPo[i]] += delta;
-			atomicSub(kg+i, delta);
-			atomicSub(kg + kpushListPo[i], delta);
+#if FULLDEBUG
+	if(threadIdx.x ==0){
+		printf("get pushList\n");
+	}
+	__syncthreads();
+#endif
+	int delta,tmpi,tmpj;
+	if(threadIdx.x == 0){
+		for(int i = 0; i < kpoCount; i++){
+			tmpi = kpushListPo[i][0];
+			tmpj = kpushListPo[i][1];
+			delta = min(kg[tmpi], krb[tmpi*knumNodes + tmpj] - kflow[tmpi*knumNodes + tmpj]);
+			kflow[tmpi*knumNodes + tmpj] += delta;
+			kg[tmpi] -= delta;
+			kg[tmpj] += delta;
+		}
+		for(int i = 0; i < knaCount; i++){
+			tmpi = kpushListNa[i][0];
+			tmpj = kpushListNa[i][1];
+			delta = min(kg[tmpi], kflow[tmpj*knumNodes + tmpi] - klb[tmpj*knumNodes + tmpi]);
+			kflow[tmpj*knumNodes + tmpi] -= delta;
+			kg[tmpi] -= delta;
+			kg[tmpj] += delta;
 		}
 	}
-	for(int i = lnodes; i < rnodes; i++){
-		if(kpushListNa[i] != -1){
-//			delta = min(kg[i], kflow[kpushListNa[i]*knumNodes + i]);
-			kflow[kpushListNa[i]*knumNodes + i] -= delta;
-			atomicSub(kg+i, delta);
-			atomicSub(kg + kpushListNa[i], delta);
+	__syncthreads();
+#if FULLDEBUG
+		if(threadIdx.x == 0){
+			printf("out pushFlow\n");
 		}
-	}
+		__syncthreads();
+#endif
+
 	return ;
 }
 __device__ void priceRise(
@@ -147,6 +185,13 @@ __device__ void priceRise(
 		const int* edges,
 		const int* kg
 		){
+#if FULLDEBUG
+		if(threadIdx.x == 0){
+			printf("in priceRise\n");
+		}
+		__syncthreads();
+#endif
+
 	int ti,tj,swap,tmpa,tmpb;
 	for(int i = lnodes; i < rnodes; i++){
 		if(kg[i] > 0){
@@ -155,6 +200,7 @@ __device__ void priceRise(
 			knodesRisePrice[i] = false;
 		}
 	}
+	__syncthreads();
 	for(int i = ledges; i < redges; i++){
 		ti = edges[i*2 + 0];
 		tj = edges[i*2 + 1];
@@ -167,17 +213,24 @@ __device__ void priceRise(
 			if(kflow[ti*knumNodes + tj] < krb[ti*knumNodes + tj]){
 				tmpb = kprice[tj] + kcost[ti*knumNodes + tj] + epsilon - kprice[ti];
 				if(tmpb >= 0){
-					atomicMax(&minRise, tmpb);
+					atomicMin(&minRise, tmpb);
 				}
 			}
 			if(kflow[tj*knumNodes + ti] > klb[tj*knumNodes + ti]){
 				tmpa = kprice[tj] - kcost[tj*knumNodes + ti] + epsilon - kprice[ti];
-				if(tmpa > 0){
-					atomicMax(&minRise, tmpa);
+				if(tmpa >= 0){
+					atomicMin(&minRise, tmpa);
 				}
 			}
 		}
 	}
+#if FULLDEBUG
+		if(threadIdx.x == 0){
+			printf("out priceRise\n");
+		}
+		__syncthreads();
+#endif
+
 }
 __global__ void __launch_bounds__(1024, 1)
 auction_algorithm_kernel(
@@ -218,10 +271,6 @@ auction_algorithm_kernel(
 
 	int totalIteratorNum = 0;
 	int iteratorNum = 0;
-	int allIterater = 0;
-	int tmpa = 0;
-	int tmpb = 0;
-	int tmpi = 0;
 	int scalingFactor = 2;
 	int costScale = 9;
 	int gdelta = 0;
@@ -260,6 +309,14 @@ auction_algorithm_kernel(
 	__syncthreads();
 #endif
 	while(costScale >= 0){
+#if DEBUG
+		if(threadId == 0){
+			printf("cost scale: \n");
+		}
+#endif
+		for(int i = lnodes; i < rnodes; i++){
+			kg[i] = kgraw[i];
+		}
 
 		int ktmp = 1<<costScale;
 
@@ -279,11 +336,17 @@ auction_algorithm_kernel(
 				kti = kedges[i*2 + 0];
 				ktj = kedges[i*2 + 1];
 				if(kcost[kti*knumNodes+ktj] - kprice[kti] + kprice[ktj] + kepsilon <= 0){
-					kg[kti] -= krb[kti*knumNodes+ktj];
-					kg[ktj] += krb[kti*knumNodes+ktj];
+					atomicSub(kg + kti, krb[kti*knumNodes + ktj]);
+					atomicAdd(kg + ktj, krb[kti*knumNodes + ktj]);
 					kflow[kti*knumNodes+ktj] = krb[kti*knumNodes+ktj];
 				}
 		}
+#if FULLDEBUG
+		if(threadId == 0){
+			printNodes(kg, knumNodes, "kg cycle init0");
+		}
+		__syncthreads();
+#endif
 		iteratorNum = 0;
 		if(threadId == 0)
 		{
@@ -321,35 +384,28 @@ auction_algorithm_kernel(
 		break;
 #endif
 		__syncthreads();
+
 		kcheck(
 			kg,
 			lnodes,
 			rnodes
 		);
 		__syncthreads();
-
+#if FULLDEBUG
+		if(threadId == 0){
+			printf("first check: %d\n",kflag);
+			printNodes(kg, knumNodes, "kg cycle init");
+		}
+		__syncthreads();
+#endif
 		while(!kflag){
-			tmpb = 0;
-/*			pushFlow(
-				lnodes,
-				rnodes,
-				ledges,
-				redges,
-				kepsilon,
-				knumNodes,
-				kflow,
-				krb,
-				klb,
-				kprice,
-				kcost,
-				kedges,
-				kg
-				);*/
+#if FULLDEBUG
 			if(threadId == 0){
-				minRise = MAXMY;
+				printf("iteration : %d\n", iteratorNum);
 			}
 			__syncthreads();
-/*			priceRise(
+#endif
+			pushFlow(
 				lnodes,
 				rnodes,
 				ledges,
@@ -364,13 +420,38 @@ auction_algorithm_kernel(
 				kedges,
 				kg
 				);
-*/
+			if(threadId == 0){
+				minRise = MAXMY;
+			}
 			__syncthreads();
+			priceRise(
+				lnodes,
+				rnodes,
+				ledges,
+				redges,
+				kepsilon,
+				knumNodes,
+				kflow,
+				krb,
+				klb,
+				kprice,
+				kcost,
+				kedges,
+				kg
+				);
+			__syncthreads();
+#if FULLDEBUG
+			if(threadId == 0){
+				printf("minRise: %d\n", minRise);
+			}
+			__syncthreads();
+#endif
 			if(threadId == 0){
 				if(minRise == MAXMY){
 					minRise = 0;
 				}
 			}
+
 			__syncthreads();
 			for(int i = lnodes; i < rnodes; i++){
 				if(knodesRisePrice[i]){
@@ -380,10 +461,6 @@ auction_algorithm_kernel(
 			__syncthreads();
 			iteratorNum++;
 			totalIteratorNum++;
-			if(iteratorNum == 5){
-				break;
-			}
-
 			if(threadId == 0)
 			{
 				kflag = true;
@@ -394,16 +471,32 @@ auction_algorithm_kernel(
 				rnodes
 			);
 			__syncthreads();
+#if FULLDEBUG
+			if(threadId == 0){
+				printNodes(kg, knumNodes, "kg");
+				printNodes(kprice, knumNodes, "kprice");
+			}
+			__syncthreads();
+#endif
 		}
-		int tans = 0;
+
+#if DEBUG
+		if(threadId == 0){
+			tans = 0;
+		}
+		__syncthreads();
 		for(int i = ledges; i < redges; i++){
 			kti = kedges[i*2 + 0];
 			ktj = kedges[i*2 + 1];
 			atomicAdd(&tans, kflow[kti*knumNodes + ktj]*kcostRaw[kti*knumNodes + ktj]);
 		}
 		if(threadId == 0){
+			printf("inner loop out\n");
 			printf("temporary ans: %d\n",tans);
+			printf("cost scale: %d\n", costScale);
 		}
+		__syncthreads();
+#endif
 		if(costScale ==0){
 			break;
 		}
@@ -419,6 +512,7 @@ auction_algorithm_kernel(
 	}
 	__syncthreads();
 }
+hr_clock_rep timer_start, time_mem, timer_stop;
 
 void run_auction(
 		int numNodes,
@@ -495,7 +589,7 @@ void run_auction(
 	int ans = 0;
 	for(int i = 0; i < numNodes; i++){
 		for(int j = 0; j < numNodes; j++){
-//			ans += hflow[i*numNodes + j]*hcost[i*numNodes+ j];
+			ans += hflow[i*numNodes + j]*hcost[i*numNodes+ j];
 //			cout << hflow[i*numNodes + j] << " ";
 		}
 	}

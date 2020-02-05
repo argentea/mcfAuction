@@ -70,9 +70,9 @@ void printPi(){
 void printPrice(){
 	cout << "*********************\n"
 		<< "price\n"
-		<< "********************\n";
+		<< "**********************\n";
 
-	for(int i = nodeNum-1; i >=0; i--){
+	for(int i = 0; i < nodeNum; i++){
 		printf("%d\t", price[i]);
 	}
 	printf("\n");
@@ -81,8 +81,8 @@ void printGrow(){
 	cout << "*********************\n"
 		<< "grow\n"
 		<< "********************\n";
+	for(int i = 0; i < nodeNum; i++){
 
-	for(int i = nodeNum-1; i >=0; i--){
 		printf("%d\t", g[i]);
 	}
 	printf("\n");
@@ -344,6 +344,7 @@ int main(int argc, char *argv[]){
 	int tmpb = 0;
 	int tmpi = 0;
 	scalingFactor = 2;
+	costScale = 0;
 	while(costScale >= 0){
 		memset(flow, 0, sizeof(flow));
 		for(int i = 0 ; i < SIZE; i++){
@@ -356,9 +357,12 @@ int main(int argc, char *argv[]){
 		printGrow();
 //		printCost();
 		while(!check()){
+			cout << "iteration : " << iteratorNum << endl;
 			tmpb = 0;
 			pushMy();
 			priceRise();
+			printGrow();
+			printPrice();
 //			if(iteratorNum - tmpi > 500){
 //				cout << "iteratorNum is " << iteratorNum << endl;
 //				printPi();
