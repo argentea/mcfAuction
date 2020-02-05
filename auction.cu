@@ -15,6 +15,20 @@
 #define DEBUG 1
 #define FULLDEBUG 0
 using namespace std;
+typedef std::chrono::high_resolution_clock::rep hr_clock_rep;
+
+inline hr_clock_rep get_globaltime(void) 
+{
+	using namespace std::chrono;
+	return high_resolution_clock::now().time_since_epoch().count();
+}
+
+// Returns the period in miliseconds
+inline double get_timer_period(void) 
+{
+	using namespace std::chrono;
+	return 1000.0 * high_resolution_clock::period::num / high_resolution_clock::period::den;
+}
 __device__ int kflag;
 #if DEBUG
 __device__ int tans;
@@ -512,7 +526,7 @@ auction_algorithm_kernel(
 	}
 	__syncthreads();
 }
-hr_clock_rep timer_start, time_mem, timer_stop;
+hr_clock_rep timer_start, timer_mem, timer_stop;
 
 void run_auction(
 		int numNodes,
@@ -540,6 +554,7 @@ void run_auction(
 
 	int* dflow;
 
+	timer_start = get_globaltime();
 	cudaMalloc((void **)&dedges, EDGESIZE*2*sizeof(int));
 	cudaMalloc((void **)&dcost, SIZE*SIZE*sizeof(int));
 	cudaMalloc((void **)&dcostRaw, SIZE*SIZE*sizeof(int));
@@ -564,6 +579,7 @@ void run_auction(
 	cudaMemcpy(dlb, hlb, SIZE*SIZE*sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(drb, hrb, SIZE*SIZE*sizeof(int), cudaMemcpyHostToDevice);
 
+	timer_mem = get_globaltime();
 	cudaProfilerStart();
 	cout << "start kernel\n";
 	auction_algorithm_kernel<<<1,threadNum>>>
@@ -583,7 +599,7 @@ void run_auction(
 		dflow);
 	cudaProfilerStop();
 	cudaDeviceSynchronize();
-
+	timer_stop = get_globaltime();
 	cudaMemcpy(hflow, dflow, SIZE*SIZE*sizeof(int), cudaMemcpyDeviceToHost);
 	
 	int ans = 0;
@@ -685,5 +701,9 @@ int main(int argc, char *argv[]){
 
 		hflow
 	);
+
+	std::cerr << "run_acution takes "<< (timer_stop - timer_start)*get_timer_period() << "ms totally.\n";
+	std::cerr << "memory copy takes "<< (timer_mem - timer_start)*get_timer_period() << "ms totally.\n";
+	std::cerr << "kernel takes "<< (timer_stop - timer_mem)*get_timer_period() << "ms totally.\n";
 	return 0;
 }

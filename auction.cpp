@@ -344,7 +344,6 @@ int main(int argc, char *argv[]){
 	int tmpb = 0;
 	int tmpi = 0;
 	scalingFactor = 2;
-	costScale = 0;
 	while(costScale >= 0){
 		memset(flow, 0, sizeof(flow));
 		for(int i = 0 ; i < SIZE; i++){
@@ -354,15 +353,12 @@ int main(int argc, char *argv[]){
 		cycleInit();
 		cerr << costScale << endl;
 		iteratorNum = 0;
-		printGrow();
+//		printGrow();
 //		printCost();
 		while(!check()){
-			cout << "iteration : " << iteratorNum << endl;
 			tmpb = 0;
 			pushMy();
 			priceRise();
-			printGrow();
-			printPrice();
 //			if(iteratorNum - tmpi > 500){
 //				cout << "iteratorNum is " << iteratorNum << endl;
 //				printPi();
