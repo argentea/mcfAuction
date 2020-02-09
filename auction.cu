@@ -36,8 +36,8 @@ __device__ int tans;
 __device__ int minRise;
 __device__ int kpoCount;
 __device__ int knaCount;
-__device__ int kpushListPo[SIZE][2];
-__device__ int kpushListNa[SIZE][2];
+__device__ int kpushListPo[SIZE][3];
+__device__ int kpushListNa[SIZE][3];
 __device__ bool knodesRisePrice[SIZE];
 __device__ void kcheck(
 		const int* kg,
@@ -140,12 +140,14 @@ __device__ void pushFlow(
 			tindex = atomicAdd(&kpoCount, 1);
 			kpushListPo[tindex][0] = ti;
 			kpushListPo[tindex][1] = tj;
+			kpushListPo[tindex][2] = i;
 			continue;
 		}
 		if(kcost[i] - kprice[ti] + kprice[tj] - epsilon == 0&&kg[tj] > 0){
 			tindex = atomicAdd(&knaCount, 1);
 			kpushListNa[tindex][0] = tj;
 			kpushListNa[tindex][1] = ti;
+			kpushListNa[tindex][2] = i;
 			continue;
 		}
 	}
@@ -155,12 +157,13 @@ __device__ void pushFlow(
 	}
 	__syncthreads();
 #endif
-	int delta,tmpi,tmpj;
+	int delta,tmpi,tmpj,edgeid;
 	if(threadIdx.x == 0){
 		for(int i = 0; i < kpoCount; i++){
 			tmpi = kpushListPo[i][0];
 			tmpj = kpushListPo[i][1];
-			delta = min(kg[tmpi], krb[tmpi*knumNodes + tmpj] - kflow[tmpi*knumNodes + tmpj]);
+			edgeid = kpushListPo[i][2];
+			delta = min(kg[tmpi], krb[edgeid] - kflow[tmpi*knumNodes + tmpj]);
 			kflow[tmpi*knumNodes + tmpj] += delta;
 			kg[tmpi] -= delta;
 			kg[tmpj] += delta;
@@ -168,7 +171,8 @@ __device__ void pushFlow(
 		for(int i = 0; i < knaCount; i++){
 			tmpi = kpushListNa[i][0];
 			tmpj = kpushListNa[i][1];
-			delta = min(kg[tmpi], kflow[tmpj*knumNodes + tmpi] - klb[tmpj*knumNodes + tmpi]);
+			edgeid = kpushListNa[i][2];
+			delta = min(kg[tmpi], kflow[tmpj*knumNodes + tmpi] - klb[edgeid]);
 			kflow[tmpj*knumNodes + tmpi] -= delta;
 			kg[tmpi] -= delta;
 			kg[tmpj] += delta;
@@ -219,13 +223,13 @@ __device__ void priceRise(
 		ti = edges[i*2 + 0];
 		tj = edges[i*2 + 1];
 		if(knodesRisePrice[ti]!=knodesRisePrice[tj]){
-			if(kflow[ti*knumNodes + tj] < krb[ti*knumNodes + tj] && !knodesRisePrice[tj]){
+			if(kflow[ti*knumNodes + tj] < krb[i] && !knodesRisePrice[tj]){
 				tmpb = kprice[tj] + kcost[i] + epsilon - kprice[ti];
 				if(tmpb >= 0){
 					atomicMin(&minRise, tmpb);
 				}
 			}
-			if(kflow[ti*knumNodes + tj] > klb[ti*knumNodes + tj] && knodesRisePrice[tj]){
+			if(kflow[ti*knumNodes + tj] > klb[i] && knodesRisePrice[tj]){
 				tmpa = kprice[ti] - kcost[i] + epsilon - kprice[tj];
 				if(tmpa >= 0){
 					atomicMin(&minRise, tmpa);
@@ -344,9 +348,9 @@ auction_algorithm_kernel(
 				ktj = kedges[i*2 + 1];
 				//todo
 				if(kcost[i] - kprice[kti] + kprice[ktj] + kepsilon <= 0){
-					atomicSub(kg + kti, krb[kti*knumNodes + ktj]);
-					atomicAdd(kg + ktj, krb[kti*knumNodes + ktj]);
-					kflow[kti*knumNodes+ktj] = krb[kti*knumNodes+ktj];
+					atomicSub(kg + kti, krb[i]);
+					atomicAdd(kg + ktj, krb[i]);
+					kflow[kti*knumNodes+ktj] = krb[i];
 				}
 		}
 #if FULLDEBUG
@@ -499,7 +503,7 @@ auction_algorithm_kernel(
 			atomicAdd(&tans, kflow[kti*knumNodes + ktj]*kcostRaw[i]);
 		}
 		if(threadId == 0){
-			printf("inner loop out\n");
+			printf("inner loop out: %d\n",iteratorNum);
 			printf("temporary ans: %d\n",tans);
 			printf("cost scale: %d\n", costScale);
 		}
@@ -516,7 +520,7 @@ auction_algorithm_kernel(
 	if(threadId == 0)
 	{
 		printGraph(kcost, knumNodes,"cost");
-		printf("kenerl end\n");
+		printf("kenerl end: %d\n",totalIteratorNum);
 	}
 	__syncthreads();
 }
@@ -555,8 +559,9 @@ void run_auction(
 
 	cudaMalloc((void **)&dg, SIZE*sizeof(int));
 	cudaMalloc((void **)&dgraw, SIZE*sizeof(int));
-	cudaMalloc((void **)&dlb, SIZE*SIZE*sizeof(int));
-	cudaMalloc((void **)&drb, SIZE*SIZE*sizeof(int));
+	cudaMalloc((void **)&dlb, EDGESIZE*sizeof(int));
+	cudaMalloc((void **)&drb, EDGESIZE*sizeof(int));
+
 
 	cudaMalloc((void **)&dprice, SIZE*sizeof(int));
 
@@ -572,8 +577,9 @@ void run_auction(
 	cudaMemcpy(dg, hg, SIZE*sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(dgraw, hg, SIZE*sizeof(int), cudaMemcpyHostToDevice);
 
-	cudaMemcpy(dlb, hlb, SIZE*SIZE*sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(drb, hrb, SIZE*SIZE*sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(dlb, hlb, EDGESIZE*sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(drb, hrb, EDGESIZE*sizeof(int), cudaMemcpyHostToDevice);
+
 
 	timer_mem = get_globaltime();
 	cudaProfilerStart();
@@ -616,7 +622,8 @@ void initmy(
 		int *cost,
 		int *hg,
 		int *lb,
-		int *rb){
+		int *rb
+		){
 	cout << "start read in graph..\n";
 	int tnumNodes;
 	int tCapacity = 0;
@@ -647,12 +654,12 @@ void initmy(
 		edges[edgeNum*2] = ti;
 		edges[edgeNum*2 + 1] = tj;
 
-		cin >> lb[ti*SIZE + tj] >> rb[ti*SIZE + tj] >>  cost[edgeNum] ;
+		cin >> lb[edgeNum] >> rb[edgeNum] >>  cost[edgeNum] ;
 //		cout << a << "\t" << ti << " " << tj << " " << cost[ti*SIZE + tj] <<" " << lb[ti*SIZE + tj] << " " << rb[ti*SIZE + tj] <<  endl;
 //		cost[ti][tj] *= nodeNum;
 //		cost[ti][tj] %= 4000;
 		tmaxCost = max(cost[edgeNum], tmaxCost);
-		tCapacity = max(rb[ti*SIZE + tj], tCapacity);
+		tCapacity = max(rb[edgeNum], tCapacity);
 		edgeNum++;
 	}
 	cout << "EDGENUM: " << edgeNum << endl;
@@ -677,10 +684,11 @@ int main(int argc, char *argv[]){
 	int *hedges = new int[EDGESIZE*2];
 	int *hcost = new int[EDGESIZE];
 	int *hg = new int[SIZE];
-	int *hlb = new int[SIZE*SIZE];
-	int *hrb = new int[SIZE*SIZE];
+	int *hlb = new int[EDGESIZE];
+	int *hrb = new int[EDGESIZE];
 
 	int *hflow = new int[SIZE*SIZE];
+	int *hflowa = new int[EDGESIZE];
 	memset(hflow, 0, sizeof(hflow));
 
 	initmy(
@@ -690,7 +698,6 @@ int main(int argc, char *argv[]){
 		hg,
 		hlb,
 		hrb
-		
 	);
 
 	run_auction(
