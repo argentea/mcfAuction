@@ -136,13 +136,13 @@ __device__ void pushFlow(
 		int ti,tj,tindex;
 		ti = kedges[i*2 + 0];
 		tj = kedges[i*2 + 1];
-		if(kcost[ti*knumNodes + tj] - kprice[ti] + kprice[tj] + epsilon == 0&&kg[ti] >0){
+		if(kcost[i] - kprice[ti] + kprice[tj] + epsilon == 0&&kg[ti] >0){
 			tindex = atomicAdd(&kpoCount, 1);
 			kpushListPo[tindex][0] = ti;
 			kpushListPo[tindex][1] = tj;
 			continue;
 		}
-		if(kcost[ti*knumNodes + tj] - kprice[ti] + kprice[tj] - epsilon == 0&&kg[tj] > 0){
+		if(kcost[i] - kprice[ti] + kprice[tj] - epsilon == 0&&kg[tj] > 0){
 			tindex = atomicAdd(&knaCount, 1);
 			kpushListNa[tindex][0] = tj;
 			kpushListNa[tindex][1] = ti;
@@ -206,7 +206,7 @@ __device__ void priceRise(
 		__syncthreads();
 #endif
 
-	int ti,tj,swap,tmpa,tmpb;
+	int ti,tj,tmpa,tmpb;
 	for(int i = lnodes; i < rnodes; i++){
 		if(kg[i] > 0){
 			knodesRisePrice[i] = true;
@@ -219,19 +219,14 @@ __device__ void priceRise(
 		ti = edges[i*2 + 0];
 		tj = edges[i*2 + 1];
 		if(knodesRisePrice[ti]!=knodesRisePrice[tj]){
-			if(knodesRisePrice[tj]){
-				swap  = ti;
-				ti = tj;
-				tj = swap;
-			}
-			if(kflow[ti*knumNodes + tj] < krb[ti*knumNodes + tj]){
-				tmpb = kprice[tj] + kcost[ti*knumNodes + tj] + epsilon - kprice[ti];
+			if(kflow[ti*knumNodes + tj] < krb[ti*knumNodes + tj] && !knodesRisePrice[tj]){
+				tmpb = kprice[tj] + kcost[i] + epsilon - kprice[ti];
 				if(tmpb >= 0){
 					atomicMin(&minRise, tmpb);
 				}
 			}
-			if(kflow[tj*knumNodes + ti] > klb[tj*knumNodes + ti]){
-				tmpa = kprice[tj] - kcost[tj*knumNodes + ti] + epsilon - kprice[ti];
+			if(kflow[ti*knumNodes + tj] > klb[ti*knumNodes + tj] && knodesRisePrice[tj]){
+				tmpa = kprice[ti] - kcost[i] + epsilon - kprice[tj];
 				if(tmpa >= 0){
 					atomicMin(&minRise, tmpa);
 				}
@@ -338,9 +333,7 @@ auction_algorithm_kernel(
 			kti = kedges[i*2 + 0];
 			ktj = kedges[i*2 + 1];
 			kflow[kti * knumNodes + ktj] = 0;
-			if(kcostRaw[kti*knumNodes + ktj] <= kC){
-				kcost[kti*knumNodes + ktj] = kcostRaw[kti*knumNodes + ktj]/ktmp;
-			}
+			kcost[i] = kcostRaw[i]/ktmp;
 		}
 		for(int i = lnodes; i < rnodes; i++){
 			kprice[i]*=(1 << gdelta);
@@ -349,7 +342,8 @@ auction_algorithm_kernel(
 		for(int i = ledges; i < redges; i++){
 				kti = kedges[i*2 + 0];
 				ktj = kedges[i*2 + 1];
-				if(kcost[kti*knumNodes+ktj] - kprice[kti] + kprice[ktj] + kepsilon <= 0){
+				//todo
+				if(kcost[i] - kprice[kti] + kprice[ktj] + kepsilon <= 0){
 					atomicSub(kg + kti, krb[kti*knumNodes + ktj]);
 					atomicAdd(kg + ktj, krb[kti*knumNodes + ktj]);
 					kflow[kti*knumNodes+ktj] = krb[kti*knumNodes+ktj];
@@ -502,7 +496,7 @@ auction_algorithm_kernel(
 		for(int i = ledges; i < redges; i++){
 			kti = kedges[i*2 + 0];
 			ktj = kedges[i*2 + 1];
-			atomicAdd(&tans, kflow[kti*knumNodes + ktj]*kcostRaw[kti*knumNodes + ktj]);
+			atomicAdd(&tans, kflow[kti*knumNodes + ktj]*kcostRaw[i]);
 		}
 		if(threadId == 0){
 			printf("inner loop out\n");
@@ -556,8 +550,9 @@ void run_auction(
 
 	timer_start = get_globaltime();
 	cudaMalloc((void **)&dedges, EDGESIZE*2*sizeof(int));
-	cudaMalloc((void **)&dcost, SIZE*SIZE*sizeof(int));
-	cudaMalloc((void **)&dcostRaw, SIZE*SIZE*sizeof(int));
+	cudaMalloc((void **)&dcost, EDGESIZE*sizeof(int));
+	cudaMalloc((void **)&dcostRaw, EDGESIZE*sizeof(int));
+
 	cudaMalloc((void **)&dg, SIZE*sizeof(int));
 	cudaMalloc((void **)&dgraw, SIZE*sizeof(int));
 	cudaMalloc((void **)&dlb, SIZE*SIZE*sizeof(int));
@@ -570,8 +565,9 @@ void run_auction(
 
 	cudaMemcpy(dedges, hedges, EDGESIZE*2*sizeof(int), cudaMemcpyHostToDevice);
 	
-	cudaMemcpy(dcost, hcost, SIZE*SIZE*sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(dcostRaw, hcost, SIZE*SIZE*sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(dcost, hcost, EDGESIZE*sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(dcostRaw, hcost, EDGESIZE*sizeof(int), cudaMemcpyHostToDevice);
+
 
 	cudaMemcpy(dg, hg, SIZE*sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(dgraw, hg, SIZE*sizeof(int), cudaMemcpyHostToDevice);
@@ -603,12 +599,12 @@ void run_auction(
 	cudaMemcpy(hflow, dflow, SIZE*SIZE*sizeof(int), cudaMemcpyDeviceToHost);
 	
 	int ans = 0;
-	for(int i = 0; i < numNodes; i++){
-		for(int j = 0; j < numNodes; j++){
-			ans += hflow[i*numNodes + j]*hcost[i*numNodes+ j];
+//	for(int i = 0; i < numNodes; i++){
+//		for(int j = 0; j < numNodes; j++){
+//			ans += hflow[i*numNodes + j]*hcost[i*numNodes+ j];
 //			cout << hflow[i*numNodes + j] << " ";
-		}
-	}
+//		}
+//	}
 	cout << "ans:  " << ans << endl;
 
 }
@@ -650,16 +646,26 @@ void initmy(
 		ti--;tj--;
 		edges[edgeNum*2] = ti;
 		edges[edgeNum*2 + 1] = tj;
-		edgeNum++;
 
-		cin >> lb[ti*SIZE + tj] >> rb[ti*SIZE + tj] >>  cost[ti*SIZE + tj] ;
+		cin >> lb[ti*SIZE + tj] >> rb[ti*SIZE + tj] >>  cost[edgeNum] ;
 //		cout << a << "\t" << ti << " " << tj << " " << cost[ti*SIZE + tj] <<" " << lb[ti*SIZE + tj] << " " << rb[ti*SIZE + tj] <<  endl;
 //		cost[ti][tj] *= nodeNum;
 //		cost[ti][tj] %= 4000;
-		tmaxCost = max(cost[ti*SIZE + tj], tmaxCost);
+		tmaxCost = max(cost[edgeNum], tmaxCost);
 		tCapacity = max(rb[ti*SIZE + tj], tCapacity);
+		edgeNum++;
 	}
+	cout << "EDGENUM: " << edgeNum << endl;
 	*dc = tmaxCost;
+	/*
+	for(int i = 0; i < edgeNum;i ++){
+		printf("%d\t",cost[edges[(i * 2 + 0)]*SIZE + edges[i * 2 + 1]]);
+	}
+	cout << endl;
+	for(int i = 0; i < edgeNum; i++){
+		printf("%d\t",costa[i]);
+	}
+	*/
 	cout << "read end\n";
 }
 
@@ -669,7 +675,7 @@ int main(int argc, char *argv[]){
 	int numEdges = EDGESIZE;
 	int hC;
 	int *hedges = new int[EDGESIZE*2];
-	int *hcost = new int[SIZE*SIZE];
+	int *hcost = new int[EDGESIZE];
 	int *hg = new int[SIZE];
 	int *hlb = new int[SIZE*SIZE];
 	int *hrb = new int[SIZE*SIZE];
