@@ -13,25 +13,14 @@
 
 //now support matrix
 //Edge is not used;
-class Edge{
-	private:
-		int source;
-		int sink;
-	public:
-		Edge(int so, int si):source(so),sink(si){}
-		int sourceAt(){
-			return source;
-		}
-		int sinkAt(){
-			return sink;
-		}
-};
+
 class Graph{
 	public:
 		enum graphType {matrix, edgePriority, vetexPriority};
 	private:
 		int numNodes;
 		int numEdges;
+		int maxCost;
 		int* dedges;
 		int* dcost;
 		int* dcostRaw;
@@ -43,8 +32,9 @@ class Graph{
 		int* dgrowRaw;
 		graphType type;
 	public:
-		Graph(int hnumNodes, int hnumEdges, int* hedges, int* hcost, int* hlb, int* hrb, int* hgrow){
+		Graph(int hnumNodes, int hnumEdges, int hmaxCost, int* hedges, int* hcost, int* hlb, int* hrb, int* hgrow){
 			type = matrix;
+			maxCost = hmaxCost;
 			numNodes = hnumNodes;
 			numEdges = hnumEdges;
 			cudaMalloc((void **)&dedges, EDGESIZE*2*sizeof(int));
@@ -83,11 +73,17 @@ class Graph{
 			cudaFree(dlb);
 			cudaFree(drb);
 		}
+		__device__ int getMaxCost(){
+			return maxCost;
+		}
 		__device__ void setPrice(int i, int value){
 			dprice[i] = value;
 		}
 		__device__ void setFlow(int i, int j ,int value){
 			dflow[i*numNodes + j] = value;
+		}
+		__device__ void setCost(int i, int j, int value){
+			dcost[i*numNodes + j] = value;
 		}
 		__device__ void setGrow(int i, int value){
 			dgrow[i] = value;
