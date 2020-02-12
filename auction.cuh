@@ -83,14 +83,20 @@ class Graph{
 			cudaFree(dlb);
 			cudaFree(drb);
 		}
-		__device__ void chagePrice(int i, int value){
+		__device__ void setPrice(int i, int value){
 			dprice[i] = value;
 		}
-		__device__ void chageFlow(int i, int j ,int value){
+		__device__ void setFlow(int i, int j ,int value){
 			dflow[i*numNodes + j] = value;
 		}
-		__device__ void chageGrow(int i, int value){
+		__device__ void setGrow(int i, int value){
 			dgrow[i] = value;
+		}
+		__device__ void atomicAddGrow(int i, int value){
+			atomicAdd(dgrow + i, value);
+		}
+		__device__ void atomicSubGrow(int i, int value){
+			atomicSub(dgrow + i , value);
 		}
 
 		__device__ int edge2source(int i){
@@ -128,10 +134,10 @@ class Graph{
 			return;	
 		}
 
-		__device__ int getNodesNum(){
+		__inline__	__device__ int getNodesNum(){
 			return numNodes;
 		}
-		__device__ int getEdgesNum(){
+		__inline__	__device__ int getEdgesNum(){
 			return numEdges;
 		}
 };
