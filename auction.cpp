@@ -344,7 +344,6 @@ int main(int argc, char *argv[]){
 	int tmpb = 0;
 	int tmpi = 0;
 	scalingFactor = 2;
-	costScale = 0;
 	while(costScale >= 0){
 		memset(flow, 0, sizeof(flow));
 		for(int i = 0 ; i < SIZE; i++){

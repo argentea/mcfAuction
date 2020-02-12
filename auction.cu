@@ -326,6 +326,7 @@ auction_algorithm_kernel(
 		if(threadId == 0){
 			printf("cost scale: \n");
 		}
+		__syncthreads();
 #endif
 		for(int i = lnodes; i < rnodes; i++){
 			kg[i] = kgraw[i];
