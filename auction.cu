@@ -219,19 +219,14 @@ __device__ void priceRise(
 		ti = edges[i*2 + 0];
 		tj = edges[i*2 + 1];
 		if(knodesRisePrice[ti]!=knodesRisePrice[tj]){
-			if(knodesRisePrice[tj]){
-				swap  = ti;
-				ti = tj;
-				tj = swap;
-			}
-			if(kflow[ti*knumNodes + tj] < krb[ti*knumNodes + tj]){
+			if(kflow[ti*knumNodes + tj] < krb[ti*knumNodes + tj]&&knodesRisePrice[ti]){
 				tmpb = kprice[tj] + kcost[ti*knumNodes + tj] + epsilon - kprice[ti];
 				if(tmpb >= 0){
 					atomicMin(&minRise, tmpb);
 				}
 			}
-			if(kflow[tj*knumNodes + ti] > klb[tj*knumNodes + ti]){
-				tmpa = kprice[tj] - kcost[tj*knumNodes + ti] + epsilon - kprice[ti];
+			if(kflow[ti*knumNodes + tj] > klb[ti*knumNodes + tj]&&knodesRisePrice[tj]){
+				tmpa = kprice[ti] - kcost[ti*knumNodes + tj] + epsilon - kprice[tj];
 				if(tmpa >= 0){
 					atomicMin(&minRise, tmpa);
 				}
@@ -326,6 +321,7 @@ auction_algorithm_kernel(
 #if DEBUG
 		if(threadId == 0){
 			printf("cost scale: \n");
+			printf("iterator: %d\n", iteratorNum);
 		}
 #endif
 		for(int i = lnodes; i < rnodes; i++){
