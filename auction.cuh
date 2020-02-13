@@ -17,8 +17,6 @@
 //todo add enum for different graph type
 //todo add adjacency list type
 #define auctionCode 1
-#define SIZE 256
-#define EDGESIZE 2048
 #define DEBUG 1
 #define FULLDEBUG 0
 
@@ -58,7 +56,6 @@ class Graph{
 		int* dgrowRaw;
 		graphType type;
 
-		int* dnode2edge;
 	public:
 		Graph(graphType htype,int hnumNodes, int hnumEdges, int hmaxCost, int* hedges, int* hcost, int* hlb, int* hrb, int* hgrow){
 			type = htype;
@@ -99,7 +96,7 @@ class Graph{
 		}
 		Graph(graphType htype,const char* fileName){
 			type = htype;
-			int *hcost,*hedges,*hgrow,*hrb,*hlb,*hnode2edge;
+			int *hcost,*hedges,*hgrow,*hrb,*hlb;
 			int sizeNodeArray;
 			int sizeEdgeArray;
 			std::cerr << "input file: " << fileName << std::endl;
@@ -143,22 +140,16 @@ class Graph{
 			}
 			if(type == edgeList){
 				std::cerr << "Graph type: edgeList\n";
-				hnode2edge = (int*)malloc(sizeNodeArray*sizeNodeArray*sizeof(int));
-				memset(hnode2edge, 0, sizeNodeArray*sizeNodeArray*sizeof(int));
 				int ti, tj;
 				for(int i = 0; i < numEdges; i++){
 					inputfile >> a >> ti >> tj;
 					ti--;tj--;
-					hnode2edge[ti*numNodes + tj] = i;
 					hedges[i*2] = ti;
 					hedges[i*2+1] = tj;
 					inputfile >> hlb[i] >> hrb[i] >> hcost[i];
 					maxCost = max(hcost[i],maxCost);
 					maxCapacity = max(hrb[i], maxCapacity);
 				}
-				cudaMalloc((void **)&dnode2edge, sizeNodeArray*sizeNodeArray*sizeof(int));
-				cudaMemcpy(dnode2edge, hnode2edge, sizeNodeArray*sizeNodeArray*sizeof(int),cudaMemcpyHostToDevice);
-				free(hnode2edge);
 			}
 
 
@@ -205,9 +196,6 @@ class Graph{
 			cudaFree(drb);
 			cudaFree(dprice);
 			cudaFree(dflow);
-			if(type == edgeList){
-				cudaFree(dnode2edge);
-			}
 		}
 		__device__ int getMaxCost(){
 			return maxCost;
@@ -220,28 +208,16 @@ class Graph{
 			return;
 		}
 		__device__ void setFlow(int i, int j ,int value){
-			if(type == matrix){
-				dflow[i*numNodes + j] = value;
-				return;
-			}
-			if(type == edgeList){
-				dflow[dnode2edge[i*numNodes+j]] = value;
-				return;
-			}
+			dflow[i*numNodes + j] = value;
+			return;
 		}
 		__inline__ __device__ void setCost(int i, int value){
 			dcost[i] = value;
 			return;
 		}
 		__device__ void setCost(int i, int j, int value){
-			if(type == matrix){
-				dcost[i*numNodes + j] = value;
-				return;
-			}
-			if(type == edgeList){
-				dcost[dnode2edge[i*numNodes+j]] = value;
-				return;
-			}
+			dcost[i*numNodes + j] = value;
+			return;
 		}
 		__inline__ __device__ void setGrow(int i, int value){
 			dgrow[i] = value;
@@ -273,66 +249,31 @@ class Graph{
 			return dcost[i];
 		}
 		__device__ int atCost(int i, int j){
-			if(type == matrix){
-				return dcost[i*numNodes + j];
-			}
-			if(type == edgeList){
-				return dcost[dnode2edge[i*numNodes+j]];
-			}
-			printf("bad access to dcost!!!");
-			return 0;
+			return dcost[i*numNodes + j];
 		}
 		__inline__ __device__ int atCostRaw(int i){
 			return dcostRaw[i];
 		}
 		__device__ int atCostRaw(int i, int j){
-			if(type == matrix){
-				return dcostRaw[i*numNodes + j];
-			}
-			if(type == edgeList){
-				return dcostRaw[dnode2edge[i*numNodes + j]];
-			}
-			printf("bad access to dcostRaw!!!");
-			return 0;
+			return dcostRaw[i*numNodes + j];
 		}
 		__inline__ __device__ int atFlow(int i){
 			return dflow[i];
 		}
 		__device__ int atFlow(int i, int j){
-			if(type == matrix){
-				return dflow[i*numNodes + j];
-			}
-			if(type == edgeList){
-				return dflow[dnode2edge[i*numNodes + j]];
-			}
-			printf("bad access to dflow!!!");
-			return 0;
+			return dflow[i*numNodes + j];
 		}
 		__inline__ __device__ int atLb(int i){
 			return dlb[i];
 		}
 		__device__ int atLb(int i, int j){
-			if(type == matrix){
-				return dlb[i*numNodes + j];
-			}
-			if(type == edgeList){
-				return dlb[dnode2edge[i*numNodes + j]];
-			}
-			printf("bad access to dlb!!!");
-			return 0;
+			return dlb[i*numNodes + j];
 		}
 		__inline__ __device__ int atRb(int i){
 			return drb[i];
 		}
 		__device__ int atRb(int i, int j){
-			if(type == matrix){
-				return drb[i*numNodes + j];
-			}
-			if(type == edgeList){
-				return drb[dnode2edge[i*numNodes + j]];
-			}
-			printf("bad access to drb!!!");
-			return 0;
+			return drb[i*numNodes + j];
 		}
 		//Todo add printGraph function
 		__device__ void printGrow(){

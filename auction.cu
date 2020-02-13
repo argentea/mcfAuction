@@ -19,12 +19,12 @@ struct AuctionState
         kpushListNa = nullptr; 
         knodesRisePrice = nullptr; 
 
-        cudaError_t status = cudaMalloc((void **)&kpushListPo, G.getNodesNum()*2*sizeof(int));
+        cudaError_t status = cudaMalloc((void **)&kpushListPo, G.getNodesNum()*3*sizeof(int));
         if (status != cudaSuccess) 
         { 
             printf("cudaMalloc failed for kpushListPo\n"); 
         } 
-        status = cudaMalloc((void **)&kpushListNa, G.getNodesNum()*2*sizeof(int));
+        status = cudaMalloc((void **)&kpushListNa, G.getNodesNum()*3*sizeof(int));
         if (status != cudaSuccess) 
         { 
             printf("cudaMalloc failed for kpushListNa\n"); 
@@ -75,14 +75,16 @@ __device__ void pushFlow(
 		tj = G.edge2sink(i);
 		if(G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) + epsilon == 0&&G.atGrow(ti) >0){
 			tindex = atomicAdd(&kpoCount, 1);
-			state.kpushListPo[tindex * 2 + 0] = ti;
-			state.kpushListPo[tindex * 2 + 1] = tj;
+			state.kpushListPo[tindex * 3 + 0] = ti;
+			state.kpushListPo[tindex * 3 + 1] = tj;
+			state.kpushListPo[tindex * 3 + 2] = i;
 			continue;
 		}
 		if(G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) - epsilon == 0&&G.atGrow(tj) > 0){
 			tindex = atomicAdd(&knaCount, 1);
-			state.kpushListNa[tindex * 2 + 0] = tj;
-			state.kpushListNa[tindex * 2 + 1] = ti;
+			state.kpushListNa[tindex * 3 + 0] = tj;
+			state.kpushListNa[tindex * 3 + 1] = ti;
+			state.kpushListNa[tindex * 3 + 2] = i;
 			continue;
 		}
 	}
@@ -93,21 +95,23 @@ __device__ void pushFlow(
 	__syncthreads();
 #endif
 	__syncthreads();
-	int delta,tmpi,tmpj;
+	int delta,tmpi,tmpj,tmpk;
 	if(threadIdx.x == 0){
 		for(int i = 0; i < kpoCount; i++){
-			tmpi = state.kpushListPo[i * 2 + 0];
-			tmpj = state.kpushListPo[i * 2 + 1];
-			delta = min(G.atGrow(tmpi), G.atRb(tmpi,tmpj) - G.atFlow(tmpi, tmpj));
-			G.setFlow(tmpi, tmpj, G.atFlow(tmpi, tmpj) + delta);
+			tmpi = state.kpushListPo[i * 3 + 0];
+			tmpj = state.kpushListPo[i * 3 + 1];
+			tmpk = state.kpushListPo[i * 3 + 2];
+			delta = min(G.atGrow(tmpi), G.atRb(tmpk) - G.atFlow(tmpk));
+			G.setFlow(tmpk, G.atFlow(tmpk) + delta);
 			G.atomicSubGrow(tmpi, delta);
 			G.atomicAddGrow(tmpj, delta);
 		}
 		for(int i = 0; i < knaCount; i++){
-			tmpi = state.kpushListNa[i * 2 + 0];
-			tmpj = state.kpushListNa[i * 2 + 1];
-			delta = min(G.atGrow(tmpi), G.atFlow(tmpj, tmpi) - G.atLb(tmpj,tmpi));
-			G.setFlow(tmpj, tmpi, G.atFlow(tmpj, tmpi) - delta);
+			tmpi = state.kpushListNa[i * 3 + 0];
+			tmpj = state.kpushListNa[i * 3 + 1];
+			tmpk = state.kpushListNa[i * 3 + 2];
+			delta = min(G.atGrow(tmpi), G.atFlow(tmpk) - G.atLb(tmpk));
+			G.setFlow(tmpk, G.atFlow(tmpk) - delta);
 			G.atomicSubGrow(tmpi, delta);
 			G.atomicAddGrow(tmpj, delta);
 		}
@@ -395,20 +399,18 @@ void run_auction(
 
 int main(int argc, char *argv[]){
 	int threadNum = 1024;
-	int *hflow = new int[SIZE*SIZE];
-	memset(hflow, 0, sizeof(hflow));
-
 //	initmy(&hC,hedges,hcost,hg,hlb,hrb	);
 	timer_start = get_globaltime();
-	Graph auctionGraph = Graph(Graph::edgeList, "/home/kunpengjiang/project/minCostFlow/data/data2.min");
+	Graph auctionGraph = Graph(Graph::edgeList, argv[1]);
 	timer_mem = get_globaltime();
 
 //	Graph auctionGraph = Graph(Graph::matrix,numNodes, numEdges, hC, hedges, hcost, hlb, hrb, hg);
 
+    std::vector<int> hflow (auctionGraph.getNodesNum() * auctionGraph.getNodesNum(), 0);
 	run_auction(
 		auctionGraph,
 		threadNum,
-		hflow
+		hflow.data()
 	);
 
 	std::cerr << "run_acution takes "<< (timer_stop - timer_start)*get_timer_period() << "ms totally.\n";
