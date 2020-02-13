@@ -294,6 +294,9 @@ class Graph{
 			printf("bad access to dcostRaw!!!");
 			return 0;
 		}
+		__inline__ __device__ int atFlow(int i){
+			return dflow[i];
+		}
 		__device__ int atFlow(int i, int j){
 			if(type == matrix){
 				return dflow[i*numNodes + j];

@@ -116,13 +116,13 @@ __device__ void priceRise(
 		ti = G.edge2source(i);
 		tj = G.edge2sink(i);
 		if(knodesRisePrice[ti]!=knodesRisePrice[tj]){
-			if(G.atFlow(ti,tj) < G.atRb(ti,tj)&&knodesRisePrice[ti]){
+			if(G.atFlow(i) < G.atRb(ti,tj)&&knodesRisePrice[ti]){
 				tmpb = G.atPrice(tj) + G.atCost(i) + epsilon - G.atPrice(ti);
 				if(tmpb >= 0){
 					atomicMin(&minRise, tmpb);
 				}
 			}
-			if(G.atFlow(ti,tj) > G.atLb(ti,tj)&&knodesRisePrice[tj]){
+			if(G.atFlow(i) > G.atLb(ti,tj)&&knodesRisePrice[tj]){
 				tmpa = G.atPrice(ti) - G.atCost(i) + epsilon - G.atPrice(tj);
 				if(tmpa >= 0){
 					atomicMin(&minRise, tmpa);
@@ -313,9 +313,7 @@ auction_algorithm_kernel(
 		}
 		__syncthreads();
 		for(int i = ledges; i < redges; i++){
-			kti = G.edge2source(i);
-			ktj = G.edge2sink(i);
-			atomicAdd(&tans, G.atFlow(kti,ktj)*G.atCostRaw(i));
+			atomicAdd(&tans, G.atFlow(i)*G.atCostRaw(i));
 		}
 		if(threadId == 0){
 			printf("inner loop out\n");
