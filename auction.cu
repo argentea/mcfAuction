@@ -38,13 +38,13 @@ __device__ void pushFlow(
 		int ti,tj,tindex;
 		ti = G.edge2source(i);
 		tj = G.edge2sink(i);
-		if(G.atCost(ti,tj) - G.atPrice(ti) + G.atPrice(tj) + epsilon == 0&&G.atGrow(ti) >0){
+		if(G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) + epsilon == 0&&G.atGrow(ti) >0){
 			tindex = atomicAdd(&kpoCount, 1);
 			kpushListPo[tindex][0] = ti;
 			kpushListPo[tindex][1] = tj;
 			continue;
 		}
-		if(G.atCost(ti,tj) - G.atPrice(ti) + G.atPrice(tj) - epsilon == 0&&G.atGrow(tj) > 0){
+		if(G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) - epsilon == 0&&G.atGrow(tj) > 0){
 			tindex = atomicAdd(&knaCount, 1);
 			kpushListNa[tindex][0] = tj;
 			kpushListNa[tindex][1] = ti;
@@ -117,13 +117,13 @@ __device__ void priceRise(
 		tj = G.edge2sink(i);
 		if(knodesRisePrice[ti]!=knodesRisePrice[tj]){
 			if(G.atFlow(ti,tj) < G.atRb(ti,tj)&&knodesRisePrice[ti]){
-				tmpb = G.atPrice(tj) + G.atCost(ti, tj) + epsilon - G.atPrice(ti);
+				tmpb = G.atPrice(tj) + G.atCost(i) + epsilon - G.atPrice(ti);
 				if(tmpb >= 0){
 					atomicMin(&minRise, tmpb);
 				}
 			}
 			if(G.atFlow(ti,tj) > G.atLb(ti,tj)&&knodesRisePrice[tj]){
-				tmpa = G.atPrice(ti) - G.atCost(ti, tj) + epsilon - G.atPrice(tj);
+				tmpa = G.atPrice(ti) - G.atCost(i) + epsilon - G.atPrice(tj);
 				if(tmpa >= 0){
 					atomicMin(&minRise, tmpa);
 				}
@@ -213,9 +213,9 @@ auction_algorithm_kernel(
 		for(int i = ledges; i < redges; i++){
 			kti = G.edge2source(i);
 			ktj = G.edge2sink(i);
-			G.setFlow(kti, ktj, 0);
+			G.setFlow(i, 0);
 			if(G.atCostRaw(kti,ktj) <= G.getMaxCost()){
-				G.setCost(kti, ktj, G.atCostRaw(kti,ktj)/ktmp);
+				G.setCost(i, G.atCostRaw(kti,ktj)/ktmp);
 			}
 		}
 		for(int i = lnodes; i < rnodes; i++){
@@ -225,10 +225,10 @@ auction_algorithm_kernel(
 		for(int i = ledges; i < redges; i++){
 			kti = G.edge2source(i);
 			ktj = G.edge2sink(i);
-			if(G.atCost(kti, ktj) - G.atPrice(kti) + G.atPrice(ktj) + kepsilon <= 0){
+			if(G.atCost(i) - G.atPrice(kti) + G.atPrice(ktj) + kepsilon <= 0){
 				G.atomicSubGrow(kti, G.atRb(kti,ktj));
 				G.atomicAddGrow(ktj, G.atRb(kti,ktj));
-				G.setFlow(kti, ktj, G.atRb(kti,ktj));
+				G.setFlow(i, G.atRb(kti,ktj));
 			}
 		}
 		iteratorNum = 0;

@@ -229,7 +229,8 @@ class Graph{
 			}
 		}
 		__inline__ __device__ void setCost(int i, int value){
-			dcostRaw[i] = value;
+			dcost[i] = value;
+			return;
 		}
 		__device__ void setCost(int i, int j, int value){
 			if(type == matrix){
@@ -266,6 +267,9 @@ class Graph{
 		}
 		__device__ int atGrowRaw(int i){
 			return dgrowRaw[i];
+		}
+		__inline__ __device__ int atCost(int i){
+			return dcost[i];
 		}
 		__device__ int atCost(int i, int j){
 			if(type == matrix){
