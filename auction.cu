@@ -1,31 +1,7 @@
-#include <cstdlib>
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <cuda_profiler_api.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
 #include "auction.cuh"
 
-#include <chrono>
 #define MAXMY 0x3f3f3f3f
-using namespace std;
-typedef std::chrono::high_resolution_clock::rep hr_clock_rep;
 
-inline hr_clock_rep get_globaltime(void) 
-{
-	using namespace std::chrono;
-	return high_resolution_clock::now().time_since_epoch().count();
-}
-
-// Returns the period in miliseconds
-inline double get_timer_period(void) 
-{
-	using namespace std::chrono;
-	return 1000.0 * high_resolution_clock::period::num / high_resolution_clock::period::den;
-}
 __device__ int kflag;
 #if DEBUG
 __device__ int tans;
@@ -429,12 +405,12 @@ void run_auction(
 		Graph auctionGraph,
 		int threadNum,
 		int* hflow){
-	cout << "start run_auction\n";
+	std::cout << "start run_auction\n";
 	timer_start = get_globaltime();
 
 	timer_mem = get_globaltime();
 	cudaProfilerStart();
-	cout << "start kernel\n";
+	std::cout << "start kernel\n";
 	auction_algorithm_kernel<<<1,threadNum>>>
 		(
 		auctionGraph,
@@ -443,56 +419,6 @@ void run_auction(
 	cudaProfilerStop();
 	cudaDeviceSynchronize();
 	timer_stop = get_globaltime();
-}
-
-
-void initmy(
-		int *dc,
-		int *edges,
-		int *cost,
-		int *hg,
-		int *lb,
-		int *rb){
-	cout << "start read in graph..\n";
-	int tnumNodes;
-	int tCapacity = 0;
-	int tmaxCost = 0;
-	cin >> tnumNodes;
-	cout << "tnumNodes: "<< tnumNodes << endl;
-	memset(cost, MAXMY, sizeof(cost));
-	memset(edges, 0, sizeof(edges));
-	memset(hg, 0, sizeof(hg));
-	char a;
-	int fid;
-	int aNUm;
-	cin >> aNUm;
-//	cout << "aNUm " << aNUm << endl;
-	for(int i = 0; i < aNUm; i++){
-		cin >> a >> fid;
-		cin >> hg[fid-1];
-//		cout << a << " " << fid << " " << g[fid-1] << endl;
-	}
-	int ti,tj;
-	int edgeNum = 0;
-	while(true){
-		cin >> a >> ti >> tj;
-		if(ti == tj&&ti==0){
-			break;
-		}
-		ti--;tj--;
-		edges[edgeNum*2] = ti;
-		edges[edgeNum*2 + 1] = tj;
-		edgeNum++;
-
-		cin >> lb[ti*SIZE + tj] >> rb[ti*SIZE + tj] >>  cost[ti*SIZE + tj] ;
-//		cout << a << "\t" << ti << " " << tj << " " << cost[ti*SIZE + tj] <<" " << lb[ti*SIZE + tj] << " " << rb[ti*SIZE + tj] <<  endl;
-//		cost[ti][tj] *= nodeNum;
-//		cost[ti][tj] %= 4000;
-		tmaxCost = max(cost[ti*SIZE + tj], tmaxCost);
-		tCapacity = max(rb[ti*SIZE + tj], tCapacity);
-	}
-	*dc = tmaxCost;
-	cout << "read end\n";
 }
 
 int main(int argc, char *argv[]){
@@ -509,17 +435,10 @@ int main(int argc, char *argv[]){
 	int *hflow = new int[SIZE*SIZE];
 	memset(hflow, 0, sizeof(hflow));
 
-	initmy(
-		&hC,
-		hedges,
-		hcost,
-		hg,
-		hlb,
-		hrb
-		
-	);
+//	initmy(&hC,hedges,hcost,hg,hlb,hrb	);
+	Graph auctionGraph = Graph(Graph::matrix, "../data/data1.min");
 
-	Graph auctionGraph = Graph(numNodes, numEdges, hC, hedges, hcost, hlb, hrb, hg);
+//	Graph auctionGraph = Graph(Graph::matrix,numNodes, numEdges, hC, hedges, hcost, hlb, hrb, hg);
 
 	run_auction(
 		auctionGraph,
