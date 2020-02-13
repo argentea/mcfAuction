@@ -339,10 +339,10 @@ class Graph{
 			return;	
 		}
 
-		__inline__	__device__ int getNodesNum(){
+		__inline__	__host__ __device__ int getNodesNum() const {
 			return numNodes;
 		}
-		__inline__	__device__ int getEdgesNum(){
+		__inline__	__host__ __device__ int getEdgesNum() const {
 			return numEdges;
 		}
 };
