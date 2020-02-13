@@ -40,7 +40,7 @@ inline double get_timer_period(void)
 }
 class Graph{
 	public:
-		enum graphType {matrix, fakeEdgeList, edgeList};
+		enum graphType {matrix, edgeList};
 	private:
 		int numNodes;
 		int numEdges;
@@ -114,7 +114,7 @@ class Graph{
 				sizeNodeArray = numNodes;
 				sizeEdgeArray = numNodes*numNodes;
 			}
-			if(type == fakeEdgeList){
+			if(type == edgeList){
 				sizeNodeArray = numNodes;
 				sizeEdgeArray = numEdges;
 			}
@@ -140,8 +140,8 @@ class Graph{
 					maxCapacity = max(hrb[ti*numNodes + tj], maxCapacity);
 				}
 			}
-			if(type == fakeEdgeList){
-				std::cerr << "Graph type: fakeEdgeList\n";
+			if(type == edgeList){
+				std::cerr << "Graph type: edgeList\n";
 				hnode2edge = (int*)malloc(sizeNodeArray*sizeNodeArray*sizeof(int));
 				memset(hnode2edge, 0, sizeNodeArray*sizeNodeArray*sizeof(int));
 				int ti, tj;
@@ -204,7 +204,7 @@ class Graph{
 			cudaFree(drb);
 			cudaFree(dprice);
 			cudaFree(dflow);
-			if(type == fakeEdgeList){
+			if(type == edgeList){
 				cudaFree(dnode2edge);
 			}
 		}
@@ -223,7 +223,7 @@ class Graph{
 				dflow[i*numNodes + j] = value;
 				return;
 			}
-			if(type == fakeEdgeList){
+			if(type == edgeList){
 				dflow[dnode2edge[i*numNodes+j]] = value;
 				return;
 			}
@@ -237,7 +237,7 @@ class Graph{
 				dcost[i*numNodes + j] = value;
 				return;
 			}
-			if(type == fakeEdgeList){
+			if(type == edgeList){
 				dcost[dnode2edge[i*numNodes+j]] = value;
 				return;
 			}
@@ -275,7 +275,7 @@ class Graph{
 			if(type == matrix){
 				return dcost[i*numNodes + j];
 			}
-			if(type == fakeEdgeList){
+			if(type == edgeList){
 				return dcost[dnode2edge[i*numNodes+j]];
 			}
 			printf("bad access to dcost!!!");
@@ -288,7 +288,7 @@ class Graph{
 			if(type == matrix){
 				return dcostRaw[i*numNodes + j];
 			}
-			if(type == fakeEdgeList){
+			if(type == edgeList){
 				return dcostRaw[dnode2edge[i*numNodes + j]];
 			}
 			printf("bad access to dcostRaw!!!");
@@ -301,7 +301,7 @@ class Graph{
 			if(type == matrix){
 				return dflow[i*numNodes + j];
 			}
-			if(type == fakeEdgeList){
+			if(type == edgeList){
 				return dflow[dnode2edge[i*numNodes + j]];
 			}
 			printf("bad access to dflow!!!");
@@ -314,7 +314,7 @@ class Graph{
 			if(type == matrix){
 				return dlb[i*numNodes + j];
 			}
-			if(type == fakeEdgeList){
+			if(type == edgeList){
 				return dlb[dnode2edge[i*numNodes + j]];
 			}
 			printf("bad access to dlb!!!");
@@ -327,12 +327,13 @@ class Graph{
 			if(type == matrix){
 				return drb[i*numNodes + j];
 			}
-			if(type == fakeEdgeList){
+			if(type == edgeList){
 				return drb[dnode2edge[i*numNodes + j]];
 			}
 			printf("bad access to drb!!!");
 			return 0;
 		}
+		//Todo add printGraph function
 		__device__ void printGrow(){
 			return;	
 		}

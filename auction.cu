@@ -366,7 +366,7 @@ int main(int argc, char *argv[]){
 	memset(hflow, 0, sizeof(hflow));
 
 //	initmy(&hC,hedges,hcost,hg,hlb,hrb	);
-	Graph auctionGraph = Graph(Graph::fakeEdgeList, "../data/data1.min");
+	Graph auctionGraph = Graph(Graph::edgeList, "../data/data1.min");
 
 //	Graph auctionGraph = Graph(Graph::matrix,numNodes, numEdges, hC, hedges, hcost, hlb, hrb, hg);
 
