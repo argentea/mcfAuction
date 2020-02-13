@@ -12,56 +12,6 @@ __device__ int knaCount;
 __device__ int kpushListPo[SIZE][2];
 __device__ int kpushListNa[SIZE][2];
 __device__ bool knodesRisePrice[SIZE];
-
-__device__ void printNodes(const int* nodes, int numNodes, const char* name){
-	printf("*******************\n");
-	printf(name);
-	printf("\n");
-	for(int i = 0; i < numNodes; i++){
-		printf("%d\t", nodes[i]);
-	}
-	printf("\n*******************\n");
-}
-__device__ void printGraph(const int* graph, int numNodes, const char* name){
-	printf("*******************\n");
-	printf("%d", numNodes);
-	printf(name);
-//	for(int i = 0; i < numNodes; i++){
-//		for(int j = 0; j < numNodes; j++){
-//			printf("%d\t", graph[i*numNodes + j]);
-//		}
-//		printf("\n");
-//	}
-	printf("*******************\n");
-}
-
-__device__ unsigned int justForTest = 0;
-__device__ void dcostScalingInit(
-		const int costScale,
-		const int gdelta,
-		const int C,
-		const int ledges,
-		const int redges,
-		const int lnodes,
-		const int rnodes,
-		const int knumNodes,
-		const int* edges,
-		const int* costRaw,
-		int* cost,
-		int* price){
-	int ti,tj;
-	for(int i = ledges; i < redges; i++){
-		ti = edges[i*2 + 0];
-		tj = edges[i*2 + 1];
-		if(costRaw[ti*knumNodes + tj] <= C){
-			cost[ti*knumNodes + tj] = costRaw[ti*knumNodes + tj]/(1 << costScale);
-		}
-	}
-	for(int i = lnodes; i < rnodes; i++){
-		price[i]*=(1 << gdelta);
-	}
-	return;
-}
 //pushlist is not good
 __device__ void pushFlow(
 		Graph &G,
@@ -357,13 +307,6 @@ auction_algorithm_kernel(
 			}
 			__syncthreads();
 
-#if FULLDEBUG
-			if(threadId == 0){
-				printNodes(kg, knumNodes, "kg");
-				printNodes(kprice, knumNodes, "kprice");
-			}
-			__syncthreads();
-#endif
 		}
 
 #if DEBUG
@@ -423,20 +366,11 @@ void run_auction(
 
 int main(int argc, char *argv[]){
 	int threadNum = 1024;
-	int numNodes = SIZE;
-	int numEdges = EDGESIZE;
-	int hC;
-	int *hedges = new int[EDGESIZE*2];
-	int *hcost = new int[SIZE*SIZE];
-	int *hg = new int[SIZE];
-	int *hlb = new int[SIZE*SIZE];
-	int *hrb = new int[SIZE*SIZE];
-
 	int *hflow = new int[SIZE*SIZE];
 	memset(hflow, 0, sizeof(hflow));
 
 //	initmy(&hC,hedges,hcost,hg,hlb,hrb	);
-	Graph auctionGraph = Graph(Graph::matrix, "../data/data1.min");
+	Graph auctionGraph = Graph(Graph::fakeEdgeList, "../data/data1.min");
 
 //	Graph auctionGraph = Graph(Graph::matrix,numNodes, numEdges, hC, hedges, hcost, hlb, hrb, hg);
 
