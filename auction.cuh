@@ -307,6 +307,9 @@ class Graph{
 			printf("bad access to dflow!!!");
 			return 0;
 		}
+		__inline__ __device__ int atLb(int i){
+			return dlb[i];
+		}
 		__device__ int atLb(int i, int j){
 			if(type == matrix){
 				return dlb[i*numNodes + j];
@@ -316,6 +319,9 @@ class Graph{
 			}
 			printf("bad access to dlb!!!");
 			return 0;
+		}
+		__inline__ __device__ int atRb(int i){
+			return drb[i];
 		}
 		__device__ int atRb(int i, int j){
 			if(type == matrix){

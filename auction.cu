@@ -116,13 +116,13 @@ __device__ void priceRise(
 		ti = G.edge2source(i);
 		tj = G.edge2sink(i);
 		if(knodesRisePrice[ti]!=knodesRisePrice[tj]){
-			if(G.atFlow(i) < G.atRb(ti,tj)&&knodesRisePrice[ti]){
+			if(G.atFlow(i) < G.atRb(i)&&knodesRisePrice[ti]){
 				tmpb = G.atPrice(tj) + G.atCost(i) + epsilon - G.atPrice(ti);
 				if(tmpb >= 0){
 					atomicMin(&minRise, tmpb);
 				}
 			}
-			if(G.atFlow(i) > G.atLb(ti,tj)&&knodesRisePrice[tj]){
+			if(G.atFlow(i) > G.atLb(i)&&knodesRisePrice[tj]){
 				tmpa = G.atPrice(ti) - G.atCost(i) + epsilon - G.atPrice(tj);
 				if(tmpa >= 0){
 					atomicMin(&minRise, tmpa);
@@ -224,9 +224,9 @@ auction_algorithm_kernel(
 			kti = G.edge2source(i);
 			ktj = G.edge2sink(i);
 			if(G.atCost(i) - G.atPrice(kti) + G.atPrice(ktj) + kepsilon <= 0){
-				G.atomicSubGrow(kti, G.atRb(kti,ktj));
-				G.atomicAddGrow(ktj, G.atRb(kti,ktj));
-				G.setFlow(i, G.atRb(kti,ktj));
+				G.atomicSubGrow(kti, G.atRb(i));
+				G.atomicAddGrow(ktj, G.atRb(i));
+				G.setFlow(i, G.atRb(i));
 			}
 		}
 		iteratorNum = 0;
