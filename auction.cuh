@@ -281,6 +281,9 @@ class Graph{
 			printf("bad access to dcost!!!");
 			return 0;
 		}
+		__inline__ __device__ int atCostRaw(int i){
+			return dcostRaw[i];
+		}
 		__device__ int atCostRaw(int i, int j){
 			if(type == matrix){
 				return dcostRaw[i*numNodes + j];

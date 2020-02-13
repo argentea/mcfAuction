@@ -211,11 +211,9 @@ auction_algorithm_kernel(
 		int ktmp = 1<<costScale;
 
 		for(int i = ledges; i < redges; i++){
-			kti = G.edge2source(i);
-			ktj = G.edge2sink(i);
 			G.setFlow(i, 0);
-			if(G.atCostRaw(kti,ktj) <= G.getMaxCost()){
-				G.setCost(i, G.atCostRaw(kti,ktj)/ktmp);
+			if(G.atCostRaw(i) <= G.getMaxCost()){
+				G.setCost(i, G.atCostRaw(i)/ktmp);
 			}
 		}
 		for(int i = lnodes; i < rnodes; i++){
@@ -317,7 +315,7 @@ auction_algorithm_kernel(
 		for(int i = ledges; i < redges; i++){
 			kti = G.edge2source(i);
 			ktj = G.edge2sink(i);
-			atomicAdd(&tans, G.atFlow(kti,ktj)*G.atCostRaw(kti,ktj));
+			atomicAdd(&tans, G.atFlow(kti,ktj)*G.atCostRaw(i));
 		}
 		if(threadId == 0){
 			printf("inner loop out\n");
