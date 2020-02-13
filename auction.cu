@@ -338,16 +338,14 @@ auction_algorithm_kernel(
 	}
 	__syncthreads();
 }
-hr_clock_rep timer_start, timer_mem, timer_stop;
 
+hr_clock_rep timer_start, timer_mem, timer_stop;
 void run_auction(
 		Graph auctionGraph,
 		int threadNum,
 		int* hflow){
 	std::cout << "start run_auction\n";
-	timer_start = get_globaltime();
 
-	timer_mem = get_globaltime();
 	cudaProfilerStart();
 	std::cout << "start kernel\n";
 	auction_algorithm_kernel<<<1,threadNum>>>
@@ -366,7 +364,9 @@ int main(int argc, char *argv[]){
 	memset(hflow, 0, sizeof(hflow));
 
 //	initmy(&hC,hedges,hcost,hg,hlb,hrb	);
+	timer_start = get_globaltime();
 	Graph auctionGraph = Graph(Graph::edgeList, "../data/data1.min");
+	timer_mem = get_globaltime();
 
 //	Graph auctionGraph = Graph(Graph::matrix,numNodes, numEdges, hC, hedges, hcost, hlb, hrb, hg);
 

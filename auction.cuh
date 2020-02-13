@@ -38,6 +38,7 @@ inline double get_timer_period(void)
 	using namespace std::chrono;
 	return 1000.0 * high_resolution_clock::period::num / high_resolution_clock::period::den;
 }
+
 class Graph{
 	public:
 		enum graphType {matrix, edgeList};
