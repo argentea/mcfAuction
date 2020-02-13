@@ -9,8 +9,8 @@ __device__ int tans;
 __device__ int minRise;
 __device__ int kpoCount;
 __device__ int knaCount;
-__device__ int kpushListPo[SIZE][2];
-__device__ int kpushListNa[SIZE][2];
+__device__ int kpushListPo[SIZE][3];
+__device__ int kpushListNa[SIZE][3];
 __device__ bool knodesRisePrice[SIZE];
 //pushlist is not good
 __device__ void pushFlow(
@@ -42,12 +42,14 @@ __device__ void pushFlow(
 			tindex = atomicAdd(&kpoCount, 1);
 			kpushListPo[tindex][0] = ti;
 			kpushListPo[tindex][1] = tj;
+			kpushListPo[tindex][2] = i;
 			continue;
 		}
 		if(G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) - epsilon == 0&&G.atGrow(tj) > 0){
 			tindex = atomicAdd(&knaCount, 1);
 			kpushListNa[tindex][0] = tj;
 			kpushListNa[tindex][1] = ti;
+			kpushListNa[tindex][2] = i;
 			continue;
 		}
 	}
@@ -58,21 +60,23 @@ __device__ void pushFlow(
 	__syncthreads();
 #endif
 	__syncthreads();
-	int delta,tmpi,tmpj;
+	int delta,tmpi,tmpj,tmpk;
 	if(threadIdx.x == 0){
 		for(int i = 0; i < kpoCount; i++){
 			tmpi = kpushListPo[i][0];
 			tmpj = kpushListPo[i][1];
-			delta = min(G.atGrow(tmpi), G.atRb(tmpi,tmpj) - G.atFlow(tmpi, tmpj));
-			G.setFlow(tmpi, tmpj, G.atFlow(tmpi, tmpj) + delta);
+			tmpk = kpushListPo[i][2];
+			delta = min(G.atGrow(tmpi), G.atRb(tmpk) - G.atFlow(tmpk));
+			G.setFlow(tmpk, G.atFlow(tmpk) + delta);
 			G.atomicSubGrow(tmpi, delta);
 			G.atomicAddGrow(tmpj, delta);
 		}
 		for(int i = 0; i < knaCount; i++){
 			tmpi = kpushListNa[i][0];
 			tmpj = kpushListNa[i][1];
-			delta = min(G.atGrow(tmpi), G.atFlow(tmpj, tmpi) - G.atLb(tmpj,tmpi));
-			G.setFlow(tmpj, tmpi, G.atFlow(tmpj, tmpi) - delta);
+			tmpk = kpushListNa[i][2];
+			delta = min(G.atGrow(tmpi), G.atFlow(tmpk) - G.atLb(tmpk));
+			G.setFlow(tmpk, G.atFlow(tmpk) - delta);
 			G.atomicSubGrow(tmpi, delta);
 			G.atomicAddGrow(tmpj, delta);
 		}
@@ -362,10 +366,9 @@ int main(int argc, char *argv[]){
 	int threadNum = 1024;
 	int *hflow = new int[SIZE*SIZE];
 	memset(hflow, 0, sizeof(hflow));
-
 //	initmy(&hC,hedges,hcost,hg,hlb,hrb	);
 	timer_start = get_globaltime();
-	Graph auctionGraph = Graph(Graph::edgeList, "../data/data1.min");
+	Graph auctionGraph = Graph(Graph::edgeList, argv[1]);
 	timer_mem = get_globaltime();
 
 //	Graph auctionGraph = Graph(Graph::matrix,numNodes, numEdges, hC, hedges, hcost, hlb, hrb, hg);
