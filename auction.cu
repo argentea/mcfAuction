@@ -72,7 +72,8 @@ __device__ void pushFlow(
         auto const& edge = G.edge(i); 
 		ti = edge.source;
 		tj = edge.sink;
-		if(G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) + epsilon == 0 && G.atGrow(ti) >0){
+        int value = G.atCost(i) - G.atPrice(ti) + G.atPrice(tj);
+		if(value + epsilon == 0 && G.atGrow(ti) >0){
 			tindex = atomicAdd(&kpoCount, 1);
             state.kpushListPo[tindex] = i; 
             //int tindexx3 = tindex * 3; 
@@ -80,7 +81,7 @@ __device__ void pushFlow(
 			//state.kpushListPo[tindexx3 + 1] = tj;
 			//state.kpushListPo[tindexx3 + 2] = i;
 		}
-		else if (G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) - epsilon == 0 && G.atGrow(tj) > 0){
+		else if (value - epsilon == 0 && G.atGrow(tj) > 0){
 			tindex = atomicAdd(&knaCount, 1);
             state.kpushListNa[tindex] = i; 
             //int tindexx3 = tindex * 3; 
