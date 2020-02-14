@@ -4,8 +4,8 @@
 
 struct AuctionState
 {
-    int* kpushListPo; ///< length of #nodes * 2
-    int* kpushListNa; ///< length of #nodes * 2
+    int* kpushListPo; ///< length of #edges
+    int* kpushListNa; ///< length of #edges
     bool* knodesRisePrice; ///< length of #nodes 
 
     void initialize(Graph const& G)
@@ -15,12 +15,12 @@ struct AuctionState
         kpushListNa = nullptr; 
         knodesRisePrice = nullptr; 
 
-        cudaError_t status = cudaMalloc((void **)&kpushListPo, G.getNodesNum()*3*sizeof(int));
+        cudaError_t status = cudaMalloc((void **)&kpushListPo, G.getEdgesNum()*sizeof(int));
         if (status != cudaSuccess) 
         { 
             printf("cudaMalloc failed for kpushListPo\n"); 
         } 
-        status = cudaMalloc((void **)&kpushListNa, G.getNodesNum()*3*sizeof(int));
+        status = cudaMalloc((void **)&kpushListNa, G.getEdgesNum()*sizeof(int));
         if (status != cudaSuccess) 
         { 
             printf("cudaMalloc failed for kpushListNa\n"); 
@@ -69,21 +69,24 @@ __device__ void pushFlow(
 
 	for(int i = ledges; i < redges; i += edge_step){
 		int ti,tj,tindex;
-		ti = G.edge2source(i);
-		tj = G.edge2sink(i);
-		if(G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) + epsilon == 0&&G.atGrow(ti) >0){
+        auto const& edge = G.edge(i); 
+		ti = edge.source;
+		tj = edge.sink;
+		if(G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) + epsilon == 0 && G.atGrow(ti) >0){
 			tindex = atomicAdd(&kpoCount, 1);
-            int tindexx3 = tindex * 3; 
-			state.kpushListPo[tindexx3 + 0] = ti;
-			state.kpushListPo[tindexx3 + 1] = tj;
-			state.kpushListPo[tindexx3 + 2] = i;
+            state.kpushListPo[tindex] = i; 
+            //int tindexx3 = tindex * 3; 
+			//state.kpushListPo[tindexx3 + 0] = ti;
+			//state.kpushListPo[tindexx3 + 1] = tj;
+			//state.kpushListPo[tindexx3 + 2] = i;
 		}
-		else if (G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) - epsilon == 0&&G.atGrow(tj) > 0){
+		else if (G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) - epsilon == 0 && G.atGrow(tj) > 0){
 			tindex = atomicAdd(&knaCount, 1);
-            int tindexx3 = tindex * 3; 
-			state.kpushListNa[tindexx3 + 0] = tj;
-			state.kpushListNa[tindexx3 + 1] = ti;
-			state.kpushListNa[tindexx3 + 2] = i;
+            state.kpushListNa[tindex] = i; 
+            //int tindexx3 = tindex * 3; 
+			//state.kpushListNa[tindexx3 + 0] = tj;
+			//state.kpushListNa[tindexx3 + 1] = ti;
+			//state.kpushListNa[tindexx3 + 2] = i;
 		}
 	}
 #if FULLDEBUG
@@ -96,20 +99,20 @@ __device__ void pushFlow(
 	int delta,tmpi,tmpj,tmpk;
 	if(threadIdx.x == 0){
 		for(int i = 0; i < kpoCount; i++){
-            int ix3 = i * 3; 
-			tmpi = state.kpushListPo[ix3 + 0];
-			tmpj = state.kpushListPo[ix3 + 1];
-			tmpk = state.kpushListPo[ix3 + 2];
+            tmpk = state.kpushListPo[i]; 
+            auto const& edge = G.edge(tmpk); 
+            tmpi = edge.source; 
+            tmpj = edge.sink; 
 			delta = min(G.atGrow(tmpi), G.atRb(tmpk) - G.atFlow(tmpk));
 			G.setFlow(tmpk, G.atFlow(tmpk) + delta);
 			G.atomicSubGrow(tmpi, delta);
 			G.atomicAddGrow(tmpj, delta);
 		}
 		for(int i = 0; i < knaCount; i++){
-            int ix3 = i * 3; 
-			tmpi = state.kpushListNa[ix3 + 0];
-			tmpj = state.kpushListNa[ix3 + 1];
-			tmpk = state.kpushListNa[ix3 + 2];
+            tmpk = state.kpushListNa[i]; 
+            auto const& edge = G.edge(tmpk); 
+            tmpi = edge.sink; 
+            tmpj = edge.source; 
 			delta = min(G.atGrow(tmpi), G.atFlow(tmpk) - G.atLb(tmpk));
 			G.setFlow(tmpk, G.atFlow(tmpk) - delta);
 			G.atomicSubGrow(tmpi, delta);
@@ -156,8 +159,9 @@ __device__ void priceRise(
 	}
 	__syncthreads();
 	for(int i = ledges; i < redges; i += edge_step){
-		ti = G.edge2source(i);
-		tj = G.edge2sink(i);
+        auto const& edge = G.edge(i);
+		ti = edge.source;
+		tj = edge.sink;
 		if(state.knodesRisePrice[ti] != state.knodesRisePrice[tj]){
 			if(G.atFlow(i) < G.atRb(i) && state.knodesRisePrice[ti]){
 				tmpb = G.atPrice(tj) + G.atCost(i) + epsilon - G.atPrice(ti);
@@ -257,8 +261,9 @@ auction_algorithm_kernel(
 		}
 		__syncthreads();
 		for(int i = ledges; i < redges; i += edge_step){
-			kti = G.edge2source(i);
-			ktj = G.edge2sink(i);
+            auto const& edge = G.edge(i);
+			kti = edge.source;
+			ktj = edge.sink;
 			if(G.atCost(i) - G.atPrice(kti) + G.atPrice(ktj) + kepsilon <= 0){
 				G.atomicSubGrow(kti, G.atRb(i));
 				G.atomicAddGrow(ktj, G.atRb(i));

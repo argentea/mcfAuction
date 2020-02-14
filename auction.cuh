@@ -40,12 +40,19 @@ inline double get_timer_period(void)
 class Graph{
 	public:
 		enum graphType {matrix, edgeList};
+
+        struct Edge 
+        {
+            int source; 
+            int sink; 
+        };
+
 	private:
 		int numNodes;
 		int numEdges;
 		int maxCost;
 		int maxCapacity;
-		int* dedges;
+		Edge* dedges;
 		int* dcost;
 		int* dcostRaw;
 		int* dflow;
@@ -57,7 +64,8 @@ class Graph{
 		graphType type;
 
 	public:
-		Graph(graphType htype,int hnumNodes, int hnumEdges, int hmaxCost, int* hedges, int* hcost, int* hlb, int* hrb, int* hgrow){
+		Graph(graphType htype,int hnumNodes, int hnumEdges, int hmaxCost, 
+                const Edge* hedges, const int* hcost, const int* hlb, const int* hrb, const int* hgrow){
 			type = htype;
 			int sizeNodeArray;
 			int sizeEdgeArray;
@@ -67,7 +75,7 @@ class Graph{
 			sizeNodeArray = numNodes;
 			sizeEdgeArray = numNodes*numNodes;
 
-			cudaMalloc((void **)&dedges, numEdges*2*sizeof(int));
+			cudaMalloc((void **)&dedges, numEdges*sizeof(Edge));
 			cudaMalloc((void **)&dcost, sizeEdgeArray*sizeof(int));
 			cudaMalloc((void **)&dcostRaw, sizeEdgeArray*sizeof(int));
 			cudaMalloc((void **)&dgrow, sizeNodeArray*sizeof(int));
@@ -80,7 +88,7 @@ class Graph{
 			cudaMalloc((void **)&dflow, sizeEdgeArray*sizeof(int));
 
 
-			cudaMemcpy(dedges, hedges, numEdges*2*sizeof(int), cudaMemcpyHostToDevice);
+			cudaMemcpy(dedges, hedges, numEdges*sizeof(Edge), cudaMemcpyHostToDevice);
 	
 			cudaMemcpy(dcost, hcost, sizeEdgeArray*sizeof(int), cudaMemcpyHostToDevice);
 			cudaMemcpy(dcostRaw, hcost, sizeEdgeArray*sizeof(int), cudaMemcpyHostToDevice);
@@ -96,7 +104,6 @@ class Graph{
 		}
 		Graph(graphType htype,const char* fileName){
 			type = htype;
-			int *hcost,*hedges,*hgrow,*hrb,*hlb;
 			int sizeNodeArray;
 			int sizeEdgeArray;
 			std::cerr << "input file: " << fileName << std::endl;
@@ -116,11 +123,11 @@ class Graph{
 				sizeNodeArray = numNodes;
 				sizeEdgeArray = numEdges;
 			}
-			hgrow = (int*)malloc(sizeNodeArray*sizeof(int));
-			hedges = (int*)malloc(numEdges*2*sizeof(int));
-			hrb = (int*)malloc(sizeEdgeArray*sizeof(int));
-			hlb = (int*)malloc(sizeEdgeArray*sizeof(int));
-			hcost = (int*)malloc(sizeEdgeArray*sizeof(int));
+            std::vector<int> hgrow (sizeNodeArray); 
+            std::vector<Edge> hedges (numEdges); 
+            std::vector<int> hrb (sizeEdgeArray); 
+            std::vector<int> hlb (sizeEdgeArray); 
+            std::vector<int> hcost (sizeEdgeArray); 
 			for(int i = 0; i < aNum; i++){
 				inputfile >> a >> fid;
 				inputfile >> hgrow[fid-1];
@@ -131,8 +138,8 @@ class Graph{
 				for(int i = 0; i < numEdges; i++){
 					inputfile >> a >> ti >> tj;
 					ti--;tj--;
-					hedges[i*2] = ti;
-					hedges[i*2+1] = tj;
+					hedges[i].source = ti;
+					hedges[i].sink = tj;
 					inputfile >> hlb[ti*numNodes+tj] >> hrb[ti*numNodes+tj] >> hcost[ti*numNodes +tj];
 					maxCost = max(hcost[ti*numNodes + tj], maxCost);
 					maxCapacity = max(hrb[ti*numNodes + tj], maxCapacity);
@@ -144,8 +151,8 @@ class Graph{
 				for(int i = 0; i < numEdges; i++){
 					inputfile >> a >> ti >> tj;
 					ti--;tj--;
-					hedges[i*2] = ti;
-					hedges[i*2+1] = tj;
+					hedges[i].source = ti;
+					hedges[i].sink = tj;
 					inputfile >> hlb[i] >> hrb[i] >> hcost[i];
 					maxCost = max(hcost[i],maxCost);
 					maxCapacity = max(hrb[i], maxCapacity);
@@ -154,7 +161,7 @@ class Graph{
 
 
 
-			cudaMalloc((void **)&dedges, numEdges*2*sizeof(int));
+			cudaMalloc((void **)&dedges, numEdges*sizeof(Edge));
 			cudaMalloc((void **)&dcost, sizeEdgeArray*sizeof(int));
 			cudaMalloc((void **)&dcostRaw, sizeEdgeArray*sizeof(int));
 			cudaMalloc((void **)&dgrow, sizeNodeArray*sizeof(int));
@@ -164,27 +171,20 @@ class Graph{
 			cudaMalloc((void **)&dprice, sizeNodeArray*sizeof(int));
 			cudaMalloc((void **)&dflow, sizeEdgeArray*sizeof(int));
 			
-			cudaMemcpy(dedges, hedges, numEdges*2*sizeof(int), cudaMemcpyHostToDevice);
+			cudaMemcpy(dedges, hedges.data(), numEdges*sizeof(Edge), cudaMemcpyHostToDevice);
 
-			cudaMemcpy(dcost, hcost, sizeEdgeArray*sizeof(int), cudaMemcpyHostToDevice);
-			cudaMemcpy(dcostRaw, hcost, sizeEdgeArray*sizeof(int), cudaMemcpyHostToDevice);
+			cudaMemcpy(dcost, hcost.data(), sizeEdgeArray*sizeof(int), cudaMemcpyHostToDevice);
+			cudaMemcpy(dcostRaw, hcost.data(), sizeEdgeArray*sizeof(int), cudaMemcpyHostToDevice);
 
-			cudaMemcpy(dgrow, hgrow, sizeNodeArray*sizeof(int), cudaMemcpyHostToDevice);
-			cudaMemcpy(dgrowRaw, hgrow, sizeNodeArray*sizeof(int), cudaMemcpyHostToDevice);
+			cudaMemcpy(dgrow, hgrow.data(), sizeNodeArray*sizeof(int), cudaMemcpyHostToDevice);
+			cudaMemcpy(dgrowRaw, hgrow.data(), sizeNodeArray*sizeof(int), cudaMemcpyHostToDevice);
 
-			cudaMemcpy(dlb, hlb, sizeEdgeArray*sizeof(int), cudaMemcpyHostToDevice);
-			cudaMemcpy(drb, hrb, sizeEdgeArray*sizeof(int), cudaMemcpyHostToDevice);
+			cudaMemcpy(dlb, hlb.data(), sizeEdgeArray*sizeof(int), cudaMemcpyHostToDevice);
+			cudaMemcpy(drb, hrb.data(), sizeEdgeArray*sizeof(int), cudaMemcpyHostToDevice);
 			cudaMemset(dprice, 0, sizeNodeArray*sizeof(int));
 			cudaMemset(dflow, 0, sizeEdgeArray*sizeof(int));
 
-			free(hgrow);
-			free(hedges);
-			free(hrb);
-			free(hlb);
-			free(hcost);
-				
 			std::cerr << "read end\n";
-
 		}
 		~Graph(){
 			cudaFree(dedges);
@@ -229,11 +229,14 @@ class Graph{
 			atomicSub(dgrow + i , value);
 		}
 
+        __device__ Edge const& edge(int i) const {
+            return dedges[i];
+        }
 		__device__ int edge2source(int i){
-			return dedges[i*2];
+			return dedges[i].source;
 		}
 		__device__ int edge2sink(int i){
-			return dedges[i*2 + 1];
+			return dedges[i].sink;
 		}
 		
 		__device__ int atPrice(int i){
