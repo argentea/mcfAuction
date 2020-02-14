@@ -2,10 +2,6 @@
 
 #define MAXMY 0x3f3f3f3f
 
-#if DEBUG
-__device__ int tans;
-#endif
-
 struct AuctionState
 {
     int* kpushListPo; ///< length of #nodes * 2
@@ -50,8 +46,10 @@ __device__ void pushFlow(
         AuctionState& state, 
 		const int lnodes,
 		const int rnodes,
+        const int node_step, 
 		const int ledges,
 		const int redges,
+        const int edge_step, 
 		const int epsilon,
 		const int knumNodes, 
         int& kpoCount, 
@@ -69,23 +67,23 @@ __device__ void pushFlow(
 	}
 	__syncthreads();
 
-	for(int i = ledges; i < redges; i++){
+	for(int i = ledges; i < redges; i += edge_step){
 		int ti,tj,tindex;
 		ti = G.edge2source(i);
 		tj = G.edge2sink(i);
 		if(G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) + epsilon == 0&&G.atGrow(ti) >0){
 			tindex = atomicAdd(&kpoCount, 1);
-			state.kpushListPo[tindex * 3 + 0] = ti;
-			state.kpushListPo[tindex * 3 + 1] = tj;
-			state.kpushListPo[tindex * 3 + 2] = i;
-			continue;
+            int tindexx3 = tindex * 3; 
+			state.kpushListPo[tindexx3 + 0] = ti;
+			state.kpushListPo[tindexx3 + 1] = tj;
+			state.kpushListPo[tindexx3 + 2] = i;
 		}
-		if(G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) - epsilon == 0&&G.atGrow(tj) > 0){
+		else if (G.atCost(i) - G.atPrice(ti) + G.atPrice(tj) - epsilon == 0&&G.atGrow(tj) > 0){
 			tindex = atomicAdd(&knaCount, 1);
-			state.kpushListNa[tindex * 3 + 0] = tj;
-			state.kpushListNa[tindex * 3 + 1] = ti;
-			state.kpushListNa[tindex * 3 + 2] = i;
-			continue;
+            int tindexx3 = tindex * 3; 
+			state.kpushListNa[tindexx3 + 0] = tj;
+			state.kpushListNa[tindexx3 + 1] = ti;
+			state.kpushListNa[tindexx3 + 2] = i;
 		}
 	}
 #if FULLDEBUG
@@ -98,18 +96,20 @@ __device__ void pushFlow(
 	int delta,tmpi,tmpj,tmpk;
 	if(threadIdx.x == 0){
 		for(int i = 0; i < kpoCount; i++){
-			tmpi = state.kpushListPo[i * 3 + 0];
-			tmpj = state.kpushListPo[i * 3 + 1];
-			tmpk = state.kpushListPo[i * 3 + 2];
+            int ix3 = i * 3; 
+			tmpi = state.kpushListPo[ix3 + 0];
+			tmpj = state.kpushListPo[ix3 + 1];
+			tmpk = state.kpushListPo[ix3 + 2];
 			delta = min(G.atGrow(tmpi), G.atRb(tmpk) - G.atFlow(tmpk));
 			G.setFlow(tmpk, G.atFlow(tmpk) + delta);
 			G.atomicSubGrow(tmpi, delta);
 			G.atomicAddGrow(tmpj, delta);
 		}
 		for(int i = 0; i < knaCount; i++){
-			tmpi = state.kpushListNa[i * 3 + 0];
-			tmpj = state.kpushListNa[i * 3 + 1];
-			tmpk = state.kpushListNa[i * 3 + 2];
+            int ix3 = i * 3; 
+			tmpi = state.kpushListNa[ix3 + 0];
+			tmpj = state.kpushListNa[ix3 + 1];
+			tmpk = state.kpushListNa[ix3 + 2];
 			delta = min(G.atGrow(tmpi), G.atFlow(tmpk) - G.atLb(tmpk));
 			G.setFlow(tmpk, G.atFlow(tmpk) - delta);
 			G.atomicSubGrow(tmpi, delta);
@@ -131,8 +131,10 @@ __device__ void priceRise(
         AuctionState& state, 
 		const int lnodes,
 		const int rnodes,
+        const int node_step, 
 		const int ledges,
 		const int redges,
+        const int edge_step, 
 		const int epsilon,
 		const int knumNodes, 
         int& minRise
@@ -145,7 +147,7 @@ __device__ void priceRise(
 #endif
 
 	int ti,tj,tmpa,tmpb;
-	for(int i = lnodes; i < rnodes; i++){
+	for(int i = lnodes; i < rnodes; i += node_step){
 		if(G.atGrow(i) > 0){
 			state.knodesRisePrice[i] = true;
 		}else {
@@ -153,7 +155,7 @@ __device__ void priceRise(
 		}
 	}
 	__syncthreads();
-	for(int i = ledges; i < redges; i++){
+	for(int i = ledges; i < redges; i += edge_step){
 		ti = G.edge2source(i);
 		tj = G.edge2sink(i);
 		if(state.knodesRisePrice[ti] != state.knodesRisePrice[tj]){
@@ -199,6 +201,9 @@ auction_algorithm_kernel(
     __shared__ int minRise;
     __shared__ int kpoCount;
     __shared__ int knaCount;
+#if DEBUG
+    __shared__ int tans;
+#endif
 
 	const int threadId = threadIdx.x;
     if (threadId == 0) {
@@ -218,11 +223,13 @@ auction_algorithm_kernel(
     __syncthreads();
 
 	//[edgesl,edgesr) is the range of edges that the thread produre
-	int ledges = threadId * edgesDivThread;
-	int redges = min(ledges + edgesDivThread, knumEdges);
+	const int ledges = threadId * edgesDivThread;
+	const int redges = min(ledges + edgesDivThread, knumEdges);
+    const int edge_step = 1; 
 
-	int lnodes = threadId * nodesDivThread;
-	int rnodes = min(lnodes + nodesDivThread, knumNodes);
+	const int lnodes = threadId * nodesDivThread;
+	const int rnodes = min(lnodes + nodesDivThread, knumNodes);
+    const int node_step = 1; 
 
 	int kti;
 	int ktj;
@@ -233,13 +240,13 @@ auction_algorithm_kernel(
 			printf("cost scale: %d\n",costScale);
 		}
 #endif
-		for(int i = lnodes; i < rnodes; i++){
+		for(int i = lnodes; i < rnodes; i += node_step){
 			G.setGrow(i , G.atGrowRaw(i));
 		}
 
 		int ktmp = 1<<costScale;
 
-		for(int i = ledges; i < redges; i++){
+		for(int i = ledges; i < redges; i += edge_step){
 			G.setFlow(i, 0);
 			if(G.atCostRaw(i) <= G.getMaxCost()){
 				G.setCost(i, G.atCostRaw(i)/ktmp);
@@ -249,7 +256,7 @@ auction_algorithm_kernel(
 			G.setPrice(i, G.atPrice(i)*(1 << gdelta));
 		}
 		__syncthreads();
-		for(int i = ledges; i < redges; i++){
+		for(int i = ledges; i < redges; i += edge_step){
 			kti = G.edge2source(i);
 			ktj = G.edge2sink(i);
 			if(G.atCost(i) - G.atPrice(kti) + G.atPrice(ktj) + kepsilon <= 0){
@@ -258,14 +265,14 @@ auction_algorithm_kernel(
 				G.setFlow(i, G.atRb(i));
 			}
 		}
-		iteratorNum = 0;
 		if(threadId == 0)
 		{
+            iteratorNum = 0;
 			kflag = true;
 		}
 		__syncthreads();
 
-		for(int i = lnodes; i < rnodes; i++){
+		for(int i = lnodes; i < rnodes; i += node_step){
 			if(G.atGrow(i) != 0){
 				atomicAnd(&kflag, 0);
 			}
@@ -284,8 +291,10 @@ auction_algorithm_kernel(
                     state, 
                     lnodes,
                     rnodes,
+                    node_step, 
                     ledges,
                     redges,
+                    edge_step, 
                     kepsilon,
                     knumNodes, 
                     kpoCount, 
@@ -300,8 +309,10 @@ auction_algorithm_kernel(
                     state, 
                     lnodes,
                     rnodes,
+                    node_step, 
                     ledges,
                     redges,
+                    edge_step, 
                     kepsilon,
                     knumNodes, 
                     minRise
@@ -320,7 +331,7 @@ auction_algorithm_kernel(
 			}
 
 			__syncthreads();
-			for(int i = lnodes; i < rnodes; i++){
+			for(int i = lnodes; i < rnodes; i += node_step){
 				if(state.knodesRisePrice[i]){
 					G.setPrice(i, G.atPrice(i) + minRise);
 				}
@@ -332,7 +343,7 @@ auction_algorithm_kernel(
                 totalIteratorNum++;
 				kflag = true;
 			}
-			for(int i = lnodes; i < rnodes; i++){
+			for(int i = lnodes; i < rnodes; i += node_step){
 				if(G.atGrow(i) != 0){
 					atomicAnd(&kflag, 0);
 				}
@@ -346,7 +357,7 @@ auction_algorithm_kernel(
 			tans = 0;
 		}
 		__syncthreads();
-		for(int i = ledges; i < redges; i++){
+		for(int i = ledges; i < redges; i += edge_step){
 			atomicAdd(&tans, G.atFlow(i)*G.atCostRaw(i));
 		}
 		if(threadId == 0){
@@ -366,7 +377,6 @@ auction_algorithm_kernel(
         }
         __syncthreads();
 	}
-
 
 	if(threadId == 0)
 	{
