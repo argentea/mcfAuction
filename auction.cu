@@ -6,6 +6,7 @@ struct AuctionState
 {
     int* kpushListPo; ///< length of #edges
     int* kpushListNa; ///< length of #edges
+	int* kpushList;
     bool* knodesRisePrice; ///< length of #nodes 
 
     void initialize(Graph const& G)
@@ -14,6 +15,7 @@ struct AuctionState
         kpushListPo = nullptr; 
         kpushListNa = nullptr; 
         knodesRisePrice = nullptr; 
+		kpushList = nullptr;
 
         cudaError_t status = cudaMalloc((void **)&kpushListPo, G.getEdgesNum()*sizeof(int));
         if (status != cudaSuccess) 
@@ -25,6 +27,11 @@ struct AuctionState
         { 
             printf("cudaMalloc failed for kpushListNa\n"); 
         } 
+		status = cudaMalloc((void **)&kpushList, G.getEdgesNum()*sizeof(bool));
+		if (status != cudaSuccess)
+		{
+			printf("cudaMalloc failed for kmpush\n");
+		}
         status = cudaMalloc((void **)&knodesRisePrice, G.getNodesNum()*sizeof(bool));
         if (status != cudaSuccess) 
         { 
@@ -37,6 +44,7 @@ struct AuctionState
         cudaFree(kpushListPo);
         cudaFree(kpushListNa); 
         cudaFree(knodesRisePrice);
+		cudaFree(kpushList);
     }
 };
 
@@ -53,7 +61,8 @@ __device__ void pushFlow(
 		const int epsilon,
 		const int knumNodes, 
         int& kpoCount, 
-        int& knaCount
+        int& knaCount,
+		int& kpushCount
 		){
 #if FULLDEBUG
 	if(threadIdx.x ==0){
@@ -64,11 +73,12 @@ __device__ void pushFlow(
 	if(threadIdx.x ==0){
 		kpoCount = 0;
 		knaCount = 0;
+		kpushCount = 0;
 	}
 	__syncthreads();
 
 	for(int i = ledges; i < redges; i += edge_step){
-		int ti,tj,tindex;
+		int ti,tj,tindex,mindex;
         auto const& edge = G.edge(i); 
 		ti = edge.source;
 		tj = edge.sink;
@@ -76,18 +86,16 @@ __device__ void pushFlow(
 		if(value + epsilon == 0 && G.atGrow(ti) >0){
 			tindex = atomicAdd(&kpoCount, 1);
             state.kpushListPo[tindex] = i; 
-            //int tindexx3 = tindex * 3; 
-			//state.kpushListPo[tindexx3 + 0] = ti;
-			//state.kpushListPo[tindexx3 + 1] = tj;
-			//state.kpushListPo[tindexx3 + 2] = i;
+			
+			mindex = atomicAdd(&kpushCount, 1);
+			state.kpushList[mindex] = G.atRb(i) - G.atFlow(i);
 		}
 		else if (value - epsilon == 0 && G.atGrow(tj) > 0){
 			tindex = atomicAdd(&knaCount, 1);
             state.kpushListNa[tindex] = i; 
-            //int tindexx3 = tindex * 3; 
-			//state.kpushListNa[tindexx3 + 0] = tj;
-			//state.kpushListNa[tindexx3 + 1] = ti;
-			//state.kpushListNa[tindexx3 + 2] = i;
+
+			mindex = atomicAdd(&kpushCount, 1);
+			state.kpushList[mindex] = G.atLb(i) - G.atFlow(i);
 		}
 	}
 #if FULLDEBUG
@@ -98,6 +106,27 @@ __device__ void pushFlow(
 #endif
 	__syncthreads();
 	int delta,tmpi,tmpj,tmpk;
+	/*
+	int tdivid = kpushCount / blockDim.x;
+	int tmod = kpushCount % blockDim.x;
+	int tlb,trb,tmpedge;
+	if(threadIdx.x < tmod){
+		tlb = threadIdx.x * (tdivid + 1);
+		trb = (threadIdx.x + 1) * (tdivid + 1);
+	}else{
+		tlb = threadIdx.x * tdivid + tmod;
+		trb = (threadIdx.x + 1)*tdivid + tmod;
+	}
+	for(int i = tlb; i < trb; i++){
+		delta = state.kpushList[i];
+		auto const& edge = G.edge(i);
+		tmpi = edge.source;
+		tmpj = edge.sink;
+		G.setFlow(edgeid, G.atFlow(i) + delta);
+		G.atomicSubGrow(tmpi, delta);
+		G.atomicAddGrow(tmpj, delta);
+*/
+
 	if(threadIdx.x == 0){
 		for(int i = 0; i < kpoCount; i++){
             tmpk = state.kpushListPo[i]; 
@@ -206,6 +235,7 @@ auction_algorithm_kernel(
     __shared__ int minRise;
     __shared__ int kpoCount;
     __shared__ int knaCount;
+	__shared__ int kpushCount;
 #if DEBUG
     __shared__ int tans;
 #endif
@@ -304,7 +334,8 @@ auction_algorithm_kernel(
                     kepsilon,
                     knumNodes, 
                     kpoCount, 
-                    knaCount
+                    knaCount,
+					kpushCount
                     );
 			if(threadId == 0){
 				minRise = MAXMY;
@@ -324,9 +355,10 @@ auction_algorithm_kernel(
                     minRise
                     );
 			__syncthreads();
-#if FULLDEBUG
+#if DEBUG
 			if(threadId == 0){
-				printf("minRise: %d\n", minRise);
+				if(minRise == 0)
+				printf("iteration : %d  minRise: %d\n", iteratorNum ,minRise);
 			}
 			__syncthreads();
 #endif

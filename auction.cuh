@@ -222,11 +222,11 @@ class Graph{
 		__inline__ __device__ void setGrow(int i, int value){
 			dgrow[i] = value;
 		}
-		__device__ void atomicAddGrow(int i, int value){
-			atomicAdd(dgrow + i, value);
+		__device__ int atomicAddGrow(int i, int value){
+			return atomicAdd(dgrow + i, value);
 		}
-		__device__ void atomicSubGrow(int i, int value){
-			atomicSub(dgrow + i , value);
+		__device__ int atomicSubGrow(int i, int value){
+			return atomicSub(dgrow + i , value);
 		}
 
         __device__ Edge const& edge(int i) const {
