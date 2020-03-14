@@ -66,8 +66,6 @@ __device__ void pushFlow(
         const int edge_step, 
 		const int epsilon,
 		const int knumNodes, 
-        int& kpoCount, 
-        int& knaCount,
 		int& kpushCount
 		){
 #if FULLDEBUG
@@ -77,8 +75,6 @@ __device__ void pushFlow(
 	__syncthreads();
 #endif
 	if(threadIdx.x ==0){
-		kpoCount = 0;
-		knaCount = 0;
 		kpushCount = 0;
 	}
 	__syncthreads();
@@ -90,7 +86,6 @@ __device__ void pushFlow(
 		tj = edge.sink;
         int value = G.atCost(i) - G.atPrice(ti) + G.atPrice(tj);
 		if(value + epsilon == 0 && G.atGrow(ti) >0){
-			tindex = atomicAdd(&kpoCount, 1);
 			
 			mindex = atomicAdd(&kpushCount, 1);
 
@@ -101,7 +96,6 @@ __device__ void pushFlow(
 			state.kpushListDelta[mindex] = G.atRb(i) - G.atFlow(i);
 		}
 		else if (value - epsilon == 0 && G.atGrow(tj) > 0){
-			tindex = atomicAdd(&knaCount, 1);
 
 			mindex = atomicAdd(&kpushCount, 1);
 			state.kpushList[mindex].edge = i;
@@ -152,26 +146,6 @@ __device__ void pushFlow(
 			G.atomicSubGrow(tmpi, delta);
 			G.atomicAddGrow(tmpj, delta);
 		}
-/*
-		for(int i = 0; i < kpoCount; i++){
-            tmpk = state.kpushListPo[i]; 
-            auto const& edge = G.edge(tmpk); 
-            tmpi = edge.source; 
-            tmpj = edge.sink; 
-			delta = min(G.atGrow(tmpi), G.atRb(tmpk) - G.atFlow(tmpk));
-			G.setFlow(tmpk, G.atFlow(tmpk) + delta);
-			G.atomicSubGrow(tmpi, delta);
-			G.atomicAddGrow(tmpj, delta);
-		}
-		for(int i = 0; i < knaCount; i++){
-            tmpk = state.kpushListNa[i]; 
-            auto const& edge = G.edge(tmpk); 
-            tmpi = edge.sink; 
-            tmpj = edge.source; 
-			G.setFlow(tmpk, G.atFlow(tmpk) - delta);
-			G.atomicSubGrow(tmpi, delta);
-			G.atomicAddGrow(tmpj, delta);
-		}*/
 	}
 	__syncthreads();
 #if FULLDEBUG
@@ -257,8 +231,6 @@ auction_algorithm_kernel(
 	__shared__ int nodesDivThread;
     __shared__ int kflag; 
     __shared__ int minRise;
-    __shared__ int kpoCount;
-    __shared__ int knaCount;
 	__shared__ int kpushCount;
 	__shared__ int kpushFlag;
 #if DEBUG
@@ -358,8 +330,6 @@ auction_algorithm_kernel(
                     edge_step, 
                     kepsilon,
                     knumNodes, 
-                    kpoCount, 
-                    knaCount,
 					kpushCount
                     );
 			if(threadId == 0){
