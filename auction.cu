@@ -13,7 +13,6 @@ struct AuctionState
 {
 	struct PushEdge* kpushList;
 
-	int* kpushListDelta;
 	int* kpushListFlag;
     bool* knodesRisePrice; ///< length of #nodes 
 
@@ -34,11 +33,6 @@ struct AuctionState
         { 
             printf("cudaMalloc failed for kpushListFlag\n"); 
         } 
-		status = cudaMalloc((void **)&kpushListDelta, G.getEdgesNum()*sizeof(bool));
-		if (status != cudaSuccess)
-		{
-			printf("cudaMalloc failed for kpushListDelta\n");
-		}
         status = cudaMalloc((void **)&knodesRisePrice, G.getNodesNum()*sizeof(bool));
         if (status != cudaSuccess) 
         { 
@@ -49,7 +43,6 @@ struct AuctionState
     void destroy()
     {
         cudaFree(knodesRisePrice);
-		cudaFree(kpushListDelta);
 		cudaFree(kpushList);
     }
 };
@@ -93,7 +86,6 @@ __device__ void pushFlow(
 			state.kpushList[mindex].edge = i;
 			state.kpushList[mindex].delta = G.atRb(i) - G.atFlow(i);
 			state.kpushList[mindex].direct = true;
-			state.kpushListDelta[mindex] = G.atRb(i) - G.atFlow(i);
 		}
 		else if (value - epsilon == 0 && G.atGrow(tj) > 0){
 
@@ -101,8 +93,6 @@ __device__ void pushFlow(
 			state.kpushList[mindex].edge = i;
 			state.kpushList[mindex].direct = false;
 			state.kpushList[mindex].delta = G.atFlow(i) - G.atLb(i);
-
-			state.kpushListDelta[mindex] = G.atLb(i) - G.atFlow(i);
 		}
 	}
 #if FULLDEBUG
