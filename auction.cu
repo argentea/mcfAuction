@@ -2,35 +2,42 @@
 
 #define MAXMY 0x3f3f3f3f
 
+struct PushEdge
+{
+	int edge;
+	int delta;
+	bool direct;
+};
+
 struct AuctionState
 {
-    int* kpushListPo; ///< length of #edges
-    int* kpushListNa; ///< length of #edges
-	int* kpushList;
+	struct PushEdge* kpushList;
+
+	int* kpushListDelta;
+	int* kpushListFlag;
     bool* knodesRisePrice; ///< length of #nodes 
 
     void initialize(Graph const& G)
     {
         printf("initialize state with %d nodes\n", G.getNodesNum());
-        kpushListPo = nullptr; 
-        kpushListNa = nullptr; 
-        knodesRisePrice = nullptr; 
 		kpushList = nullptr;
+        knodesRisePrice = nullptr; 
 
-        cudaError_t status = cudaMalloc((void **)&kpushListPo, G.getEdgesNum()*sizeof(int));
+		cudaError_t status = cudaMalloc((void **)&kpushList, G.getEdgesNum()*sizeof(PushEdge));
         if (status != cudaSuccess) 
         { 
-            printf("cudaMalloc failed for kpushListPo\n"); 
+            printf("cudaMalloc failed for kpushList\n"); 
         } 
-        status = cudaMalloc((void **)&kpushListNa, G.getEdgesNum()*sizeof(int));
+
+		status = cudaMalloc((void **)&kpushListFlag, G.getNodesNum()*sizeof(int));
         if (status != cudaSuccess) 
         { 
-            printf("cudaMalloc failed for kpushListNa\n"); 
+            printf("cudaMalloc failed for kpushListFlag\n"); 
         } 
-		status = cudaMalloc((void **)&kpushList, G.getEdgesNum()*sizeof(bool));
+		status = cudaMalloc((void **)&kpushListDelta, G.getEdgesNum()*sizeof(bool));
 		if (status != cudaSuccess)
 		{
-			printf("cudaMalloc failed for kmpush\n");
+			printf("cudaMalloc failed for kpushListDelta\n");
 		}
         status = cudaMalloc((void **)&knodesRisePrice, G.getNodesNum()*sizeof(bool));
         if (status != cudaSuccess) 
@@ -41,9 +48,8 @@ struct AuctionState
 
     void destroy()
     {
-        cudaFree(kpushListPo);
-        cudaFree(kpushListNa); 
         cudaFree(knodesRisePrice);
+		cudaFree(kpushListDelta);
 		cudaFree(kpushList);
     }
 };
@@ -85,17 +91,24 @@ __device__ void pushFlow(
         int value = G.atCost(i) - G.atPrice(ti) + G.atPrice(tj);
 		if(value + epsilon == 0 && G.atGrow(ti) >0){
 			tindex = atomicAdd(&kpoCount, 1);
-            state.kpushListPo[tindex] = i; 
 			
 			mindex = atomicAdd(&kpushCount, 1);
-			state.kpushList[mindex] = G.atRb(i) - G.atFlow(i);
+
+
+			state.kpushList[mindex].edge = i;
+			state.kpushList[mindex].delta = G.atRb(i) - G.atFlow(i);
+			state.kpushList[mindex].direct = true;
+			state.kpushListDelta[mindex] = G.atRb(i) - G.atFlow(i);
 		}
 		else if (value - epsilon == 0 && G.atGrow(tj) > 0){
 			tindex = atomicAdd(&knaCount, 1);
-            state.kpushListNa[tindex] = i; 
 
 			mindex = atomicAdd(&kpushCount, 1);
-			state.kpushList[mindex] = G.atLb(i) - G.atFlow(i);
+			state.kpushList[mindex].edge = i;
+			state.kpushList[mindex].direct = false;
+			state.kpushList[mindex].delta = G.atFlow(i) - G.atLb(i);
+
+			state.kpushListDelta[mindex] = G.atLb(i) - G.atFlow(i);
 		}
 	}
 #if FULLDEBUG
@@ -106,10 +119,10 @@ __device__ void pushFlow(
 #endif
 	__syncthreads();
 	int delta,tmpi,tmpj,tmpk;
-	/*
+
 	int tdivid = kpushCount / blockDim.x;
 	int tmod = kpushCount % blockDim.x;
-	int tlb,trb,tmpedge;
+	int tlb,trb,told;
 	if(threadIdx.x < tmod){
 		tlb = threadIdx.x * (tdivid + 1);
 		trb = (threadIdx.x + 1) * (tdivid + 1);
@@ -117,17 +130,29 @@ __device__ void pushFlow(
 		tlb = threadIdx.x * tdivid + tmod;
 		trb = (threadIdx.x + 1)*tdivid + tmod;
 	}
-	for(int i = tlb; i < trb; i++){
-		delta = state.kpushList[i];
-		auto const& edge = G.edge(i);
-		tmpi = edge.source;
-		tmpj = edge.sink;
-		G.setFlow(edgeid, G.atFlow(i) + delta);
-		G.atomicSubGrow(tmpi, delta);
-		G.atomicAddGrow(tmpj, delta);
-*/
+/*	while(todoCheck){
+		for(int i = tlb; i < trb; i++)
+		{
 
+		}	
+	}
+*/
 	if(threadIdx.x == 0){
+		for(int i = 0; i < kpushCount; i++){
+			tmpk = state.kpushList[i].edge;
+			auto const& edge = G.edge(tmpk);
+			tmpi = edge.source;
+			tmpj = edge.sink;
+			if(state.kpushList[i].direct){
+				delta = min(G.atGrow(tmpi), G.atRb(tmpk) - G.atFlow(tmpk));
+			}else{
+				delta = -min(G.atGrow(tmpj), G.atFlow(tmpk) - G.atLb(tmpk));
+			}
+			G.setFlow(tmpk, G.atFlow(tmpk) + delta);
+			G.atomicSubGrow(tmpi, delta);
+			G.atomicAddGrow(tmpj, delta);
+		}
+/*
 		for(int i = 0; i < kpoCount; i++){
             tmpk = state.kpushListPo[i]; 
             auto const& edge = G.edge(tmpk); 
@@ -143,11 +168,10 @@ __device__ void pushFlow(
             auto const& edge = G.edge(tmpk); 
             tmpi = edge.sink; 
             tmpj = edge.source; 
-			delta = min(G.atGrow(tmpi), G.atFlow(tmpk) - G.atLb(tmpk));
 			G.setFlow(tmpk, G.atFlow(tmpk) - delta);
 			G.atomicSubGrow(tmpi, delta);
 			G.atomicAddGrow(tmpj, delta);
-		}
+		}*/
 	}
 	__syncthreads();
 #if FULLDEBUG
@@ -236,6 +260,7 @@ auction_algorithm_kernel(
     __shared__ int kpoCount;
     __shared__ int knaCount;
 	__shared__ int kpushCount;
+	__shared__ int kpushFlag;
 #if DEBUG
     __shared__ int tans;
 #endif
