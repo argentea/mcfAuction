@@ -6,7 +6,13 @@ struct PushEdge
 {
 	int edge;
 	int delta;
+	int gId; ///< Id of nodes which's grow decrease;
 	bool direct;
+};
+struct PushNode
+{
+	int nodeId;
+	int firstEdgeId;
 };
 
 struct AuctionState
@@ -33,6 +39,7 @@ struct AuctionState
         { 
             printf("cudaMalloc failed for kpushListFlag\n"); 
         } 
+		cudaMemset(kpushListFlag, 0, G.getNodesNum()*sizeof(int));
         status = cudaMalloc((void **)&knodesRisePrice, G.getNodesNum()*sizeof(bool));
         if (status != cudaSuccess) 
         { 
@@ -59,7 +66,8 @@ __device__ void pushFlow(
         const int edge_step, 
 		const int epsilon,
 		const int knumNodes, 
-		int& kpushCount
+		int& kpushCount,
+		int& kpushFlag
 		){
 #if FULLDEBUG
 	if(threadIdx.x ==0){
@@ -79,19 +87,17 @@ __device__ void pushFlow(
 		tj = edge.sink;
         int value = G.atCost(i) - G.atPrice(ti) + G.atPrice(tj);
 		if(value + epsilon == 0 && G.atGrow(ti) >0){
-			
 			mindex = atomicAdd(&kpushCount, 1);
-
-
 			state.kpushList[mindex].edge = i;
-			state.kpushList[mindex].delta = G.atRb(i) - G.atFlow(i);
 			state.kpushList[mindex].direct = true;
+			state.kpushList[mindex].gId = ti;
+			state.kpushList[mindex].delta = G.atRb(i) - G.atFlow(i);
 		}
 		else if (value - epsilon == 0 && G.atGrow(tj) > 0){
-
 			mindex = atomicAdd(&kpushCount, 1);
 			state.kpushList[mindex].edge = i;
 			state.kpushList[mindex].direct = false;
+			state.kpushList[mindex].gId = tj;
 			state.kpushList[mindex].delta = G.atFlow(i) - G.atLb(i);
 		}
 	}
@@ -114,29 +120,73 @@ __device__ void pushFlow(
 		tlb = threadIdx.x * tdivid + tmod;
 		trb = (threadIdx.x + 1)*tdivid + tmod;
 	}
-/*	while(todoCheck){
-		for(int i = tlb; i < trb; i++)
-		{
+	//
 
-		}	
+
+
+
+	//todo 2 ways to clean flag:
+	//clean all nodes
+	//clean used nodes
+/*
+	for(int i = lnodes; i < rnodes; i+= node_step){
+		if(state.kpushListFlag[i] != 0){
+			state.kpushListFlag[i] = 0;
+		}
 	}
+	do{
+		__syncthreads();
+		if(threadIdx.x == 0){
+			kpushFlag = 0;
+		}
+		__syncthreads();
+		for(int i = tlb; i < trb; i++){
+			tmpk = state.kpushList[i].edge;
+			tmpi = state.kpushList[i].gId;
+			auto const& edge = G.edge(tmpk);
+			if(state.kpushList[i].delta != 0 && atomicAdd(&state.kpushListFlag[tmpi], 1) == 0){
+				if(state.kpushList[i].direct){
+					tmpj = edge.sink;
+					delta = min(G.atGrow(tmpi), state.kpushList[i].delta);
+					G.setFlow(tmpk, G.atFlow(tmpk) + delta);
+				}else{
+					tmpj = edge.source;
+					delta = min(G.atGrow(tmpi), state.kpushList[i].delta);
+					G.setFlow(tmpk, G.atFlow(tmpk) - delta);
+				}
+				state.kpushList[i].delta -= delta;
+				G.atomicSubGrow(tmpi, delta);
+				G.atomicAddGrow(tmpj, delta);
+				if(delta != 0){
+					atomicAdd(&kpushFlag,1);
+				}
+			}
+			atomicSub(&state.kpushListFlag[tmpi], 1);
+		}
+		__syncthreads();
+	}while(kpushFlag != 0);
 */
+/*
 	if(threadIdx.x == 0){
 		for(int i = 0; i < kpushCount; i++){
 			tmpk = state.kpushList[i].edge;
+			tmpi = state.kpushList[i].gId;
+//				printf("get in: %d\n", tmpi);
 			auto const& edge = G.edge(tmpk);
-			tmpi = edge.source;
-			tmpj = edge.sink;
 			if(state.kpushList[i].direct){
-				delta = min(G.atGrow(tmpi), G.atRb(tmpk) - G.atFlow(tmpk));
+				tmpj = edge.sink;
+				delta = min(G.atGrow(tmpi), state.kpushList[i].delta);
+				G.setFlow(tmpk, G.atFlow(tmpk) + delta);
 			}else{
-				delta = -min(G.atGrow(tmpj), G.atFlow(tmpk) - G.atLb(tmpk));
+				tmpj = edge.source;
+				delta = min(G.atGrow(tmpi), state.kpushList[i].delta);
+				G.setFlow(tmpk, G.atFlow(tmpk) - delta);
 			}
-			G.setFlow(tmpk, G.atFlow(tmpk) + delta);
+			state.kpushList[i].delta -= delta;
 			G.atomicSubGrow(tmpi, delta);
 			G.atomicAddGrow(tmpj, delta);
 		}
-	}
+	}*/
 	__syncthreads();
 #if FULLDEBUG
 		if(threadIdx.x == 0){
@@ -320,7 +370,8 @@ auction_algorithm_kernel(
                     edge_step, 
                     kepsilon,
                     knumNodes, 
-					kpushCount
+					kpushCount,
+					kpushFlag
                     );
 			if(threadId == 0){
 				minRise = MAXMY;
@@ -445,6 +496,9 @@ int main(int argc, char *argv[]){
 		threadNum,
 		hflow.data()
 	);
+	std::cout << "run_acution takes "<< (timer_stop - timer_start)*get_timer_period() << "ms totally.\n";
+	std::cout << "memory copy takes "<< (timer_mem - timer_start)*get_timer_period() << "ms totally.\n";
+	std::cout << "kernel takes "<< (timer_stop - timer_mem)*get_timer_period() << "ms totally.\n";
 
 	std::cerr << "run_acution takes "<< (timer_stop - timer_start)*get_timer_period() << "ms totally.\n";
 	std::cerr << "memory copy takes "<< (timer_mem - timer_start)*get_timer_period() << "ms totally.\n";
