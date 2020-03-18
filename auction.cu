@@ -7,6 +7,7 @@ struct PushEdge
 	int edge;
 	int delta;
 	int gId; ///< Id of nodes which's grow decrease;
+	int nextEdge;
 	bool direct;
 };
 struct PushNode
@@ -81,7 +82,7 @@ __device__ void pushFlow(
 	__syncthreads();
 
 	for(int i = ledges; i < redges; i += edge_step){
-		int ti,tj,tindex,mindex;
+		int ti,tj,mindex;
         auto const& edge = G.edge(i); 
 		ti = edge.source;
 		tj = edge.sink;
@@ -110,16 +111,6 @@ __device__ void pushFlow(
 	__syncthreads();
 	int delta,tmpi,tmpj,tmpk;
 
-	int tdivid = kpushCount / blockDim.x;
-	int tmod = kpushCount % blockDim.x;
-	int tlb,trb,told;
-	if(threadIdx.x < tmod){
-		tlb = threadIdx.x * (tdivid + 1);
-		trb = (threadIdx.x + 1) * (tdivid + 1);
-	}else{
-		tlb = threadIdx.x * tdivid + tmod;
-		trb = (threadIdx.x + 1)*tdivid + tmod;
-	}
 	//
 
 
@@ -128,11 +119,15 @@ __device__ void pushFlow(
 	//todo 2 ways to clean flag:
 	//clean all nodes
 	//clean used nodes
-/*
-	for(int i = lnodes; i < rnodes; i+= node_step){
-		if(state.kpushListFlag[i] != 0){
-			state.kpushListFlag[i] = 0;
-		}
+	int tdivid = kpushCount / blockDim.x;
+	int tmod = kpushCount % blockDim.x;
+	int tlb,trb;
+	if(threadIdx.x < tmod){
+		tlb = threadIdx.x * (tdivid + 1);
+		trb = (threadIdx.x + 1) * (tdivid + 1);
+	}else{
+		tlb = threadIdx.x * tdivid + tmod;
+		trb = (threadIdx.x + 1)*tdivid + tmod;
 	}
 	do{
 		__syncthreads();
@@ -144,29 +139,31 @@ __device__ void pushFlow(
 			tmpk = state.kpushList[i].edge;
 			tmpi = state.kpushList[i].gId;
 			auto const& edge = G.edge(tmpk);
-			if(state.kpushList[i].delta != 0 && atomicAdd(&state.kpushListFlag[tmpi], 1) == 0){
-				if(state.kpushList[i].direct){
-					tmpj = edge.sink;
-					delta = min(G.atGrow(tmpi), state.kpushList[i].delta);
-					G.setFlow(tmpk, G.atFlow(tmpk) + delta);
-				}else{
-					tmpj = edge.source;
-					delta = min(G.atGrow(tmpi), state.kpushList[i].delta);
-					G.setFlow(tmpk, G.atFlow(tmpk) - delta);
+			if(state.kpushList[i].delta != 0){
+				if(atomicAdd(&state.kpushListFlag[tmpi], 1) == 0){
+					if(state.kpushList[i].direct){
+						tmpj = edge.sink;
+						delta = min(G.atGrow(tmpi), state.kpushList[i].delta);
+						G.setFlow(tmpk, G.atFlow(tmpk) + delta);
+					}else{
+						tmpj = edge.source;
+						delta = min(G.atGrow(tmpi), state.kpushList[i].delta);
+						G.setFlow(tmpk, G.atFlow(tmpk) - delta);
+					}
+					state.kpushList[i].delta -= delta;
+					G.atomicSubGrow(tmpi, delta);
+					G.atomicAddGrow(tmpj, delta);
+					if(delta != 0){
+						atomicAdd(&kpushFlag,1);
+					}
 				}
-				state.kpushList[i].delta -= delta;
-				G.atomicSubGrow(tmpi, delta);
-				G.atomicAddGrow(tmpj, delta);
-				if(delta != 0){
-					atomicAdd(&kpushFlag,1);
-				}
+				atomicSub(&state.kpushListFlag[tmpi], 1);
 			}
-			atomicSub(&state.kpushListFlag[tmpi], 1);
 		}
 		__syncthreads();
 	}while(kpushFlag != 0);
-*/
-/*
+	
+	/*
 	if(threadIdx.x == 0){
 		for(int i = 0; i < kpushCount; i++){
 			tmpk = state.kpushList[i].edge;
@@ -391,7 +388,7 @@ auction_algorithm_kernel(
                     minRise
                     );
 			__syncthreads();
-#if DEBUG
+#if FULLDEBUG
 			if(threadId == 0){
 				if(minRise == 0)
 				printf("iteration : %d  minRise: %d\n", iteratorNum ,minRise);
