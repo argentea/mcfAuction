@@ -16,8 +16,8 @@
 //todo add debug
 //todo add enum for different graph type
 //todo add adjacency list type
-#define auctionCode 1
 #define DEBUG 1
+#define DEBUG1 1
 #define FULLDEBUG 0
 
 //now support matrix
@@ -51,6 +51,7 @@ class Graph{
 		int numNodes;
 		int numEdges;
 		int maxCost;
+#define auctionCode 1
 		int maxCapacity;
 		Edge* dedges;
 		int* dcost;
@@ -280,6 +281,10 @@ class Graph{
 		}
 		//Todo add printGraph function
 		__device__ void printGrow(){
+			for(int i = 0; i < numNodes; i++){
+				printf("%d\t", dgrow[i]);
+			}
+			printf("\n");
 			return;	
 		}
 

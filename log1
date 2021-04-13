@@ -1,0 +1,6 @@
+19096  19096  78723
+start run_auction
+start kernel
+initialize state with 19096 nodes
+in kernel
+cost scale: 9

@@ -1,1 +1,3 @@
-./auction < /home/kunpengjiang/project/minCostFlow/data/data1.min
+make && ./auction ../data/mcf_datasets/testdata1 > log1
+#lgf/data4.min
+

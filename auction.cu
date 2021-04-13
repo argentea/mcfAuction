@@ -102,23 +102,21 @@ __device__ void pushFlow(
 			state.kpushList[mindex].delta = G.atFlow(i) - G.atLb(i);
 		}
 	}
-#if FULLDEBUG
+#if (DEBUG && DEBUG1)
 	if(threadIdx.x ==0){
 		printf("get pushList\n");
+		if(kpushCount == 0){
+			printf("no edge to push!!\n");
+		}
+		for(int i = 0; i < kpushCount; i++){
+			printf("%d\t", state.kpushList[i].edge);
+		}
+		printf("\n");
 	}
 	__syncthreads();
 #endif
 	__syncthreads();
 	int delta,tmpi,tmpj,tmpk;
-
-	//
-
-
-
-
-	//todo 2 ways to clean flag:
-	//clean all nodes
-	//clean used nodes
 	int tdivid = kpushCount / blockDim.x;
 	int tmod = kpushCount % blockDim.x;
 	int tlb,trb;
@@ -129,6 +127,7 @@ __device__ void pushFlow(
 		tlb = threadIdx.x * tdivid + tmod;
 		trb = (threadIdx.x + 1)*tdivid + tmod;
 	}
+	/*
 	do{
 		__syncthreads();
 		if(threadIdx.x == 0){
@@ -162,8 +161,7 @@ __device__ void pushFlow(
 		}
 		__syncthreads();
 	}while(kpushFlag != 0);
-	
-	/*
+*/	
 	if(threadIdx.x == 0){
 		for(int i = 0; i < kpushCount; i++){
 			tmpk = state.kpushList[i].edge;
@@ -183,7 +181,7 @@ __device__ void pushFlow(
 			G.atomicSubGrow(tmpi, delta);
 			G.atomicAddGrow(tmpj, delta);
 		}
-	}*/
+	}
 	__syncthreads();
 #if FULLDEBUG
 		if(threadIdx.x == 0){
@@ -207,7 +205,7 @@ __device__ void priceRise(
 		const int knumNodes, 
         int& minRise
 		){
-#if FULLDEBUG
+#if DEBUG
 		if(threadIdx.x == 0){
 			printf("in priceRise\n");
 		}
@@ -228,23 +226,40 @@ __device__ void priceRise(
 		ti = edge.source;
 		tj = edge.sink;
 		if(state.knodesRisePrice[ti] != state.knodesRisePrice[tj]){
+#if DEBUG
+					if(tmpb == 0){
+						printf("possible\n");
+					}
+#endif
+
 			if(G.atFlow(i) < G.atRb(i) && state.knodesRisePrice[ti]){
 				tmpb = G.atPrice(tj) + G.atCost(i) + epsilon - G.atPrice(ti);
 				if(tmpb >= 0){
+#if DEBUG
+					if(tmpb == 0){
+						printf("miRise == 0: node: %d, price: %d, Cost: %d,po\n ",ti, G.atPrice(ti),G.atCost(i));
+					}
+#endif
 					atomicMin(&minRise, tmpb);
 				}
 			}
 			if(G.atFlow(i) > G.atLb(i) && state.knodesRisePrice[tj]){
 				tmpa = G.atPrice(ti) - G.atCost(i) + epsilon - G.atPrice(tj);
 				if(tmpa >= 0){
+#if DEBUG
+					if(tmpb == 0){
+						printf("miRise == 0: node: %d, price: %d, Cost: %d,po\n ",ti, G.atPrice(ti),G.atCost(i));
+					}
+#endif
 					atomicMin(&minRise, tmpa);
 				}
 			}
 		}
 	}
-#if FULLDEBUG
+#if DEBUG
+		__syncthreads();
 		if(threadIdx.x == 0){
-			printf("out priceRise\n");
+			printf("out priceRise\n minRise = %d\n",minRise);
 		}
 		__syncthreads();
 #endif
@@ -388,13 +403,7 @@ auction_algorithm_kernel(
                     minRise
                     );
 			__syncthreads();
-#if FULLDEBUG
-			if(threadId == 0){
-				if(minRise == 0)
-				printf("iteration : %d  minRise: %d\n", iteratorNum ,minRise);
-			}
-			__syncthreads();
-#endif
+
 			if(threadId == 0){
 				if(minRise == MAXMY){
 					minRise = 0;
@@ -420,7 +429,22 @@ auction_algorithm_kernel(
 				}
 			}
 			__syncthreads();
-
+#if (DEBUG&&DEBUG1)
+			if(threadId == 0){
+//				printf("get grow\n");
+//				G.printGrow();
+				if(minRise == 0)
+					printf("iteration : %d  minRise: %d\n", iteratorNum ,minRise);
+				int unfeed = 0;
+				for(int i = 0; i < G.getNodesNum(); i++){
+					if(G.atGrow(i) > 0){
+						unfeed += G.atGrow(i);
+					}
+				}
+				printf("unfeed source is %d\n", unfeed);
+			}
+			__syncthreads();
+#endif
 		}
 
 #if DEBUG
