@@ -16,8 +16,8 @@
 //todo add debug
 //todo add enum for different graph type
 //todo add adjacency list type
-#define DEBUG 1
-#define DEBUG1 1
+#define DEBUG 0
+#define DEBUG1 0
 #define FULLDEBUG 0
 
 //now support matrix

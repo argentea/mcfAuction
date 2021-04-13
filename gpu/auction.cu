@@ -117,6 +117,7 @@ __device__ void pushFlow(
 #endif
 	__syncthreads();
 	int delta,tmpi,tmpj,tmpk;
+	/*
 	int tdivid = kpushCount / blockDim.x;
 	int tmod = kpushCount % blockDim.x;
 	int tlb,trb;
@@ -127,7 +128,7 @@ __device__ void pushFlow(
 		tlb = threadIdx.x * tdivid + tmod;
 		trb = (threadIdx.x + 1)*tdivid + tmod;
 	}
-	/*
+	
 	do{
 		__syncthreads();
 		if(threadIdx.x == 0){
@@ -285,9 +286,7 @@ auction_algorithm_kernel(
     __shared__ int minRise;
 	__shared__ int kpushCount;
 	__shared__ int kpushFlag;
-#if DEBUG
     __shared__ int tans;
-#endif
 
 	const int threadId = threadIdx.x;
     if (threadId == 0) {
@@ -475,16 +474,27 @@ auction_algorithm_kernel(
 
 	if(threadId == 0)
 	{
+		tans = 0;
+	}
+	for(int i = ledges; i < redges; i += edge_step){
+		atomicAdd(&tans, G.atFlow(i)*G.atCostRaw(i));
+	}
+	if(threadId == 0){
+		printf("inner loop out\n");
+		printf("temporary ans: %d\n",tans);
+		printf("cost scale: %d\n", costScale);
+		printf("iteratorNum: %d\n", iteratorNum);
 		printf("totalIteratorNum: %d\n", totalIteratorNum);
 		printf("kenerl end\n");
 	}
+	__syncthreads();
+
 }
 
 hr_clock_rep timer_start, timer_mem, timer_stop;
 void run_auction(
 		Graph auctionGraph,
-		int threadNum,
-		int* hflow){
+		int threadNum){
 	std::cout << "start run_auction\n";
 
 	cudaProfilerStart();
@@ -511,11 +521,9 @@ int main(int argc, char *argv[]){
 
 //	Graph auctionGraph = Graph(Graph::matrix,numNodes, numEdges, hC, hedges, hcost, hlb, hrb, hg);
 
-    std::vector<int> hflow (auctionGraph.getNodesNum() * auctionGraph.getNodesNum(), 0);
 	run_auction(
 		auctionGraph,
-		threadNum,
-		hflow.data()
+		threadNum
 	);
 	std::cout << "run_acution takes "<< (timer_stop - timer_start)*get_timer_period() << "ms totally.\n";
 	std::cout << "memory copy takes "<< (timer_mem - timer_start)*get_timer_period() << "ms totally.\n";
