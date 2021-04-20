@@ -106,37 +106,7 @@ void printNG(){
 	cout << "NG ::" << a << endl;
 }
 
-int initmy(char* fileName){
-			int sizeNodeArray;
-			int sizeEdgeArray;
-			std::cerr << "input file: " << fileName << std::endl;
-			std::cerr << "reading...\n";
-			char a;
-			int fid;
-			int aNum;
-			std::ifstream inputfile(fileName, std::ios_base::in);
-			inputfile >> nodeNum >> edgeNum >> aNum;
-			std::cout << nodeNum << "  " << edgeNum << "  " << aNum << std::endl;
-
-				sizeNodeArray = nodeNum;
-				sizeEdgeArray = nodeNum*nodeNum;
-			for(int i = 0; i < aNum; i++){
-				inputfile >> a >> fid;
-				inputfile >> graw[fid-1];
-				g[fid-1] = graw[fid-1];
-			}
-				int ti,tj;
-				for(int i = 0; i < edgeNum; i++){
-					inputfile >> a >> ti >> tj;
-					ti--;tj--;
-					edges[edgeNum][0] = ti;
-					edges[edgeNum][1] = tj;
-					inputfile >> lb[ti*edgeNum+tj] >> rb[ti*nodeNum+tj] >> cost[ti*nodeNum +tj];
-					C = max(cost[ti*nodeNum + tj], C);
-					Capacity = max(rb[ti*nodeNum + tj], Capacity);
-				}
-
-
+int initmy(){
 	cin >> nodeNum;
 	memset(cost, MAXMY, sizeof(cost));
 	memset(costRaw, MAXMY, sizeof(costRaw));

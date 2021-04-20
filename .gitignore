@@ -6,4 +6,5 @@ compile_commands.json
 *.swp
 auction
 *.o
+*.out
 log
