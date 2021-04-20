@@ -165,7 +165,6 @@ int initmy(char* fileName){
 		edges[edgeNum][0] = ti;
 		edges[edgeNum][1] = tj;
 		edgeNum++;
-
 		cin >> lb[ti][tj] >> rb[ti][tj]>>  cost[ti][tj] ;
 //		cout << a << "\t" << ti << " " << tj << " " << cost[ti][tj] <<" " << lb[ti][tj] << " " << rb[ti][tj] <<  endl;
 //		cost[ti][tj] *= nodeNum;
@@ -383,6 +382,33 @@ int main(int argc, char *argv[]){
 	int tmpb = 0;
 	int tmpi = 0;
 	scalingFactor = 2;
+	epsilon = 1;
+	for(int i = 0 ; i < SIZE; i++){
+		g[i] = graw[i];
+	}
+	while(!check()){
+		tmpb = 0;
+		pushMy();
+		priceRise();
+			for(int i = 0; i < nodeNum; i++){
+			if(g[i] > 0){
+				tmpb+=g[i];
+			}
+		}
+		if(tmpb != tmpa){
+			cout << "iteratorNum:" << tmpa << "  to  "<<tmpb << "  is  " << iteratorNum - tmpi  << "  now iterateNum is  " << iteratorNum<<
+					"   epsilon is: " << epsilon << endl;
+			tmpi = iteratorNum;
+			tmpa = tmpb;
+		}
+
+		iteratorNum++;
+	}
+	int ans = 0;
+	for(int i = 0; i < nodeNum; i++){
+		for(int j = 0; j < nodeNum; j++){
+			ans += flow[i][j]*cost[i][j];
+		}
 	while(costScale >= 0){
 		memset(flow, 0, sizeof(flow));
 		for(int i = 0 ; i < SIZE; i++){
@@ -447,5 +473,9 @@ int main(int argc, char *argv[]){
 	chrono::duration<double> initTime = mid - start;
 	chrono::duration<double> caculateTime = end - mid;
 	cout << "initTime:  " << initTime.count() << "   caculateTime:  " << caculateTime.count() << endl;
+		costScale--;
+	}
+	cout << "\nNUM\n " << iteratorNum << endl;
+	cout << "\n******************\nans: " << ans << "\n******************\n";
 	return 0;
 }
