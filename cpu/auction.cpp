@@ -1,8 +1,17 @@
 #include<iostream>
 #include<chrono>
 #include<ctime>
+#include<fstream>
 #include<memory.h>
 #include<algorithm>
+#include <chrono>
+#include <cstdlib>
+#include <string>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+
 #define NUM_THREADS 16
 #define SIZE 256
 #define EDGESIZE 2048
@@ -97,7 +106,37 @@ void printNG(){
 	cout << "NG ::" << a << endl;
 }
 
-int initmy(){
+int initmy(char* fileName){
+			int sizeNodeArray;
+			int sizeEdgeArray;
+			std::cerr << "input file: " << fileName << std::endl;
+			std::cerr << "reading...\n";
+			char a;
+			int fid;
+			int aNum;
+			std::ifstream inputfile(fileName, std::ios_base::in);
+			inputfile >> nodeNum >> edgeNum >> aNum;
+			std::cout << nodeNum << "  " << edgeNum << "  " << aNum << std::endl;
+
+				sizeNodeArray = nodeNum;
+				sizeEdgeArray = nodeNum*nodeNum;
+			for(int i = 0; i < aNum; i++){
+				inputfile >> a >> fid;
+				inputfile >> graw[fid-1];
+				g[fid-1] = graw[fid-1];
+			}
+				int ti,tj;
+				for(int i = 0; i < edgeNum; i++){
+					inputfile >> a >> ti >> tj;
+					ti--;tj--;
+					edges[edgeNum][0] = ti;
+					edges[edgeNum][1] = tj;
+					inputfile >> lb[ti*edgeNum+tj] >> rb[ti*nodeNum+tj] >> cost[ti*nodeNum +tj];
+					C = max(cost[ti*nodeNum + tj], C);
+					Capacity = max(rb[ti*nodeNum + tj], Capacity);
+				}
+
+
 	cin >> nodeNum;
 	memset(cost, MAXMY, sizeof(cost));
 	memset(costRaw, MAXMY, sizeof(costRaw));
