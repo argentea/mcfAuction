@@ -1,0 +1,7 @@
+<map id="MapBase&lt; K, V &gt;" name="MapBase&lt; K, V &gt;">
+<area shape="rect" id="node1" title="Base class of maps." alt="" coords="264,5,401,32"/>
+<area shape="rect" id="node2" href="$a03433.html" title="Constant map." alt="" coords="5,87,148,114"/>
+<area shape="rect" id="node3" href="$a03441.html" title="Constant map with inlined constant value." alt="" coords="173,80,327,121"/>
+<area shape="rect" id="node4" href="$a03429.html" title="Null map. (a.k.a. DoNothingMap)" alt="" coords="351,87,482,114"/>
+<area shape="rect" id="node5" href="$a03453.html" title="Map type based on std::map." alt="" coords="506,87,655,114"/>
+</map>

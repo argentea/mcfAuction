@@ -1,0 +1,30 @@
+<!-- BEGIN CITATIONS -->
+<!--
+\citation{DezsoJuttnerKovacs11Lemon}
+\citation{KiralyKovacs12MCF}
+\citation{amo93networkflows}
+\citation{bunnagel98efficient}
+\citation{cbc}
+\citation{clp}
+\citation{clrs01algorithms}
+\citation{coinor}
+\citation{cplex}
+\citation{dantzig63linearprog}
+\citation{dasdan04experimental}
+\citation{dasdan98minmeancycle}
+\citation{edmondskarp72theoretical}
+\citation{egres}
+\citation{glpk}
+\citation{goldberg88newapproach}
+\citation{goldberg89cyclecanceling}
+\citation{goldberg90approximation}
+\citation{goldberg97efficient}
+\citation{grosso08maxclique}
+\citation{hartmann93finding}
+\citation{karp78characterization}
+\citation{kellyoneill91netsimplex}
+\citation{klein67primal}
+\citation{soplex}
+-->
+<!-- END CITATIONS -->
+<!-- BEGIN BIBLIOGRAPHY -->

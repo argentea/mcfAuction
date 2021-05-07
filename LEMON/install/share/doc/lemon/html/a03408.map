@@ -1,0 +1,8 @@
+<map id="MipSolver" name="MipSolver">
+<area shape="rect" id="node1" title="Common base class for MIP solvers." alt="" coords="147,80,234,107"/>
+<area shape="rect" id="node3" href="$a01869.html" title="Interface for the CBC MIP solver." alt="" coords="5,155,75,181"/>
+<area shape="rect" id="node4" href="$a02185.html" title="Interface for the CPLEX MIP solver." alt="" coords="99,155,181,181"/>
+<area shape="rect" id="node5" href="$a02721.html" title="Interface for the GLPK MIP solver." alt="" coords="205,155,280,181"/>
+<area shape="rect" id="node6" href="$a03421.html" title="Skeleton class for a MIP solver interface." alt="" coords="305,155,407,181"/>
+<area shape="rect" id="node2" href="$a03341.html" title="Common base class for LP and MIP solvers." alt="" coords="156,5,225,32"/>
+</map>

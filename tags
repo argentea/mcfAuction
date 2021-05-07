@@ -1,0 +1,148 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ALL_CCFLAGS	gpu/Makefile	/^ALL_CCFLAGS :=$/;"	m
+ALL_LDFLAGS	gpu/Makefile	/^ALL_LDFLAGS :=$/;"	m
+BUILD_TYPE	gpu/Makefile	/^      BUILD_TYPE := debug$/;"	m
+BUILD_TYPE	gpu/Makefile	/^      BUILD_TYPE := release$/;"	m
+C	cpu.h	/^    int C;$/;"	m	class:CPU
+C	cpu.h	/^int C = 0;$/;"	v
+C	cpu/auction.cpp	/^int C = 0;$/;"	v
+CCFLAGS	gpu/Makefile	/^CCFLAGS     :=$/;"	m
+CPU	cpu.h	/^class CPU {$/;"	c
+CUDA_INSTALL_TARGET_DIR	gpu/Makefile	/^    CUDA_INSTALL_TARGET_DIR = targets\/ARMv7-linux-QNX\/$/;"	m
+CUDA_INSTALL_TARGET_DIR	gpu/Makefile	/^    CUDA_INSTALL_TARGET_DIR = targets\/aarch64-linux-androideabi\/$/;"	m
+CUDA_INSTALL_TARGET_DIR	gpu/Makefile	/^    CUDA_INSTALL_TARGET_DIR = targets\/aarch64-linux\/$/;"	m
+CUDA_INSTALL_TARGET_DIR	gpu/Makefile	/^    CUDA_INSTALL_TARGET_DIR = targets\/aarch64-qnx\/$/;"	m
+CUDA_INSTALL_TARGET_DIR	gpu/Makefile	/^    CUDA_INSTALL_TARGET_DIR = targets\/armv7-linux-androideabi\/$/;"	m
+CUDA_INSTALL_TARGET_DIR	gpu/Makefile	/^    CUDA_INSTALL_TARGET_DIR = targets\/armv7-linux-gnueabihf\/$/;"	m
+CUDA_INSTALL_TARGET_DIR	gpu/Makefile	/^    CUDA_INSTALL_TARGET_DIR = targets\/ppc64le-linux\/$/;"	m
+CUDA_INSTALL_TARGET_DIR	gpu/Makefile	/^CUDA_INSTALL_TARGET_DIR :=$/;"	m
+CUDA_PATH	gpu/Makefile	/^CUDA_PATH ?= \/usr\/local\/cuda-10.1$/;"	m
+CXX	cpu/Makefile	/^CXX=g++$/;"	m
+Capacity	cpu.h	/^    int Capacity;$/;"	m	class:CPU
+Capacity	cpu.h	/^int Capacity = 0;$/;"	v
+Capacity	cpu/auction.cpp	/^int Capacity = 0;$/;"	v
+DATADIR	cpu/Makefile	/^DATADIR=..\/data$/;"	m
+EDGESIZE	cpu.h	17;"	d
+EDGESIZE	cpu/auction.cpp	8;"	d	file:
+EXEC	gpu/Makefile	/^EXEC ?= @echo "[@]"$/;"	m
+GCCVERSIONLTEQ46	gpu/Makefile	/^            GCCVERSIONLTEQ46 := $(shell expr `$(HOST_COMPILER) -dumpversion` \\<= 4.6)$/;"	m
+GDEBUG	cpu.h	/^    bool GDEBUG;$/;"	m	class:CPU
+HIGHEST_SM	gpu/Makefile	/^HIGHEST_SM := $(lastword $(sort $(SMS)))$/;"	m
+HOST_ARCH	gpu/Makefile	/^HOST_ARCH   := $(shell uname -m)$/;"	m
+HOST_COMPILER	gpu/Makefile	/^            HOST_COMPILER ?= $(QNX_HOST)\/usr\/bin\/aarch64-unknown-nto-qnx7.0.0-g++$/;"	m
+HOST_COMPILER	gpu/Makefile	/^            HOST_COMPILER ?= $(QNX_HOST)\/usr\/bin\/arm-unknown-nto-qnx6.6.0eabi-g++$/;"	m
+HOST_COMPILER	gpu/Makefile	/^            HOST_COMPILER ?= aarch64-linux-android-clang++$/;"	m
+HOST_COMPILER	gpu/Makefile	/^            HOST_COMPILER ?= aarch64-linux-gnu-g++$/;"	m
+HOST_COMPILER	gpu/Makefile	/^            HOST_COMPILER ?= arm-linux-androideabi-g++$/;"	m
+HOST_COMPILER	gpu/Makefile	/^            HOST_COMPILER ?= arm-linux-gnueabihf-g++$/;"	m
+HOST_COMPILER	gpu/Makefile	/^        HOST_COMPILER ?= clang++$/;"	m
+HOST_COMPILER	gpu/Makefile	/^        HOST_COMPILER ?= powerpc64le-linux-gnu-g++$/;"	m
+HOST_COMPILER	gpu/Makefile	/^    HOST_COMPILER ?= $(GCC)$/;"	m
+HOST_COMPILER	gpu/Makefile	/^HOST_COMPILER ?= g++$/;"	m
+HOST_OS	gpu/Makefile	/^HOST_OS   := $(shell uname -s 2>\/dev\/null | tr "[:upper:]" "[:lower:]")$/;"	m
+INCLUDES	gpu/Makefile	/^INCLUDES  := -I..\/..\/common\/inc$/;"	m
+LDFLAGS	gpu/Makefile	/^LDFLAGS     :=$/;"	m
+LIBRARIES	gpu/Makefile	/^LIBRARIES :=$/;"	m
+LOGCOUNT	cpu/Makefile	/^LOGCOUNT=0$/;"	m
+LOGDIR	cpu/Makefile	/^LOGDIR=.\/log$/;"	m
+LOGNAME	cpu/Makefile	/^LOGNAME=$(patsubst %, $(LOGDIR)\/%.log,$(PRELOG))$/;"	m
+MAXITERATer	cpu.h	19;"	d
+MAXITERATer	cpu/auction.cpp	10;"	d	file:
+MAXMY	cpu.h	18;"	d
+MAXMY	cpu/auction.cpp	9;"	d	file:
+NUM_THREADS	cpu.h	15;"	d
+NUM_THREADS	cpu/auction.cpp	6;"	d	file:
+NVCC	gpu/Makefile	/^NVCC          := $(CUDA_PATH)\/bin\/nvcc -ccbin $(HOST_COMPILER)$/;"	m
+NVCCFLAGS	gpu/Makefile	/^NVCCFLAGS   := -m${TARGET_SIZE}$/;"	m
+RELOG	cpu/Makefile	/^override PRELOG=data1.min$/;"	m
+RETESTDATA	cpu/Makefile	/^override PRETESTDATA=data1.min$/;"	m
+SAMPLE_ENABLED	gpu/Makefile	/^SAMPLE_ENABLED := 0$/;"	m
+SAMPLE_ENABLED	gpu/Makefile	/^SAMPLE_ENABLED := 1$/;"	m
+SHELL	cpu/Makefile	/^SHELL=\/bin\/bash$/;"	m
+SIZE	cpu.h	16;"	d
+SIZE	cpu/auction.cpp	7;"	d	file:
+SMS	gpu/Makefile	/^SMS ?= 30 35 37 50 52 60 61 70 75$/;"	m
+TARGET_ARCH	gpu/Makefile	/^    TARGET_ARCH = armv7l$/;"	m
+TARGET_ARCH	gpu/Makefile	/^    TARGET_ARCH ?= aarch64$/;"	m
+TARGET_ARCH	gpu/Makefile	/^    TARGET_ARCH ?= armv7l$/;"	m
+TARGET_ARCH	gpu/Makefile	/^    TARGET_ARCH ?= ppc64le$/;"	m
+TARGET_ARCH	gpu/Makefile	/^    TARGET_ARCH ?= x86_64$/;"	m
+TARGET_ARCH	gpu/Makefile	/^TARGET_ARCH ?= $(HOST_ARCH)$/;"	m
+TARGET_OS	gpu/Makefile	/^TARGET_OS ?= $(HOST_OS)$/;"	m
+TARGET_SIZE	gpu/Makefile	/^            TARGET_SIZE := 32$/;"	m
+TARGET_SIZE	gpu/Makefile	/^            TARGET_SIZE := 64$/;"	m
+TARGET_SIZE	gpu/Makefile	/^        TARGET_SIZE := $(shell getconf LONG_BIT)$/;"	m
+TESTDATA	cpu/Makefile	/^TESTDATA=$(patsubst %,$(DATADIR)\/%,$(PRETESTDATA))$/;"	m
+TESTPARAMETERS	cpu/Makefile	/^TESTPARAMETERS=1$/;"	m
+_CPU_H	cpu.h	9;"	d
+check	cpu/auction.cpp	/^bool check(){$/;"	f
+cost	cpu.h	/^    int cost[SIZE][SIZE];$/;"	m	class:CPU
+cost	cpu.h	/^int cost[SIZE][SIZE];$/;"	v
+cost	cpu/auction.cpp	/^int cost[SIZE][SIZE];$/;"	v
+costRaw	cpu.h	/^    int costRaw[SIZE][SIZE];$/;"	m	class:CPU
+costRaw	cpu.h	/^int costRaw[SIZE][SIZE];$/;"	v
+costRaw	cpu/auction.cpp	/^int costRaw[SIZE][SIZE];$/;"	v
+costScale	cpu.h	/^    int costScale;$/;"	m	class:CPU
+costScale	cpu.h	/^int costScale = 1;$/;"	v
+costScale	cpu/auction.cpp	/^int costScale = 1;$/;"	v
+costScalingInit	cpu/auction.cpp	/^void costScalingInit(){$/;"	f
+cpu	mcfAuction.cpp	/^    CPU cpu = new CPU();$/;"	m	class:mcfAuction::solver	file:
+cycleInit	cpu/auction.cpp	/^void cycleInit(){$/;"	f
+edgeNum	cpu.h	/^    int edgeNum;$/;"	m	class:CPU
+edgeNum	cpu.h	/^int edgeNum;$/;"	v
+edgeNum	cpu/auction.cpp	/^int edgeNum;$/;"	v
+edges	cpu.h	/^    int edges[EDGESIZE][2];$/;"	m	class:CPU
+edges	cpu.h	/^int edges[EDGESIZE][2];$/;"	v
+edges	cpu/auction.cpp	/^int edges[EDGESIZE][2];$/;"	v
+epsilon	cpu.h	/^    int epsilon;$/;"	m	class:CPU
+epsilon	cpu.h	/^int epsilon = 1;$/;"	v
+epsilon	cpu/auction.cpp	/^int epsilon = 1;$/;"	v
+epsilon_factor	cpu.h	/^    float epsilon_factor;$/;"	m	class:CPU
+epsilon_factor	cpu.h	/^float epsilon_factor = 0.5;$/;"	v
+epsilon_factor	cpu/auction.cpp	/^float epsilon_factor = 0.5;$/;"	v
+flag	mcfAuction.cpp	/^    int flag;$/;"	m	class:mcfAuction::solver	file:
+flow	cpu.h	/^    int flow[SIZE][SIZE];$/;"	m	class:CPU
+flow	cpu.h	/^int flow[SIZE][SIZE];$/;"	v
+flow	cpu/auction.cpp	/^int flow[SIZE][SIZE];$/;"	v
+g	cpu.h	/^    int g[SIZE];$/;"	m	class:CPU
+g	cpu.h	/^int g[SIZE];$/;"	v
+g	cpu/auction.cpp	/^int g[SIZE];$/;"	v
+gdelta	cpu.h	/^    int gdelta;$/;"	m	class:CPU
+gdelta	cpu.h	/^int gdelta = 0;$/;"	v
+gdelta	cpu/auction.cpp	/^int gdelta = 0;$/;"	v
+gpu	mcfAuction.cpp	/^    GPU gpu = new GPU();$/;"	m	class:mcfAuction::solver	file:
+graw	cpu.h	/^    int graw[SIZE];$/;"	m	class:CPU
+graw	cpu.h	/^int graw[SIZE];$/;"	v
+graw	cpu/auction.cpp	/^int graw[SIZE];$/;"	v
+initmy	cpu/auction.cpp	/^int initmy(){$/;"	f
+lb	cpu.h	/^    int lb[SIZE][SIZE];$/;"	m	class:CPU
+lb	cpu.h	/^int lb[SIZE][SIZE];$/;"	v
+lb	cpu/auction.cpp	/^int lb[SIZE][SIZE];$/;"	v
+main	cpu/auction.cpp	/^int main(int argc, char *argv[]){$/;"	f
+mcfAuction	mcfAuction.cpp	/^    mcfAuction(int flag = 0): solver(flag){}$/;"	f	class:mcfAuction::solver
+nodeNum	cpu.h	/^    int nodeNum;$/;"	m	class:CPU
+nodeNum	cpu.h	/^int nodeNum;$/;"	v
+nodeNum	cpu/auction.cpp	/^int nodeNum;$/;"	v
+price	cpu.h	/^    int price[SIZE];$/;"	m	class:CPU
+price	cpu.h	/^int price[SIZE];$/;"	v
+price	cpu/auction.cpp	/^int price[SIZE];$/;"	v
+priceRise	cpu/auction.cpp	/^int priceRise(){$/;"	f
+printCost	cpu/auction.cpp	/^void printCost(){$/;"	f
+printFolw	cpu/auction.cpp	/^void printFolw(){$/;"	f
+printGrow	cpu/auction.cpp	/^void printGrow(){$/;"	f
+printNG	cpu/auction.cpp	/^void printNG(){$/;"	f
+printPi	cpu/auction.cpp	/^void printPi(){$/;"	f
+printPrice	cpu/auction.cpp	/^void printPrice(){$/;"	f
+pushMy	cpu/auction.cpp	/^int pushMy(){$/;"	f
+rb	cpu.h	/^    int rb[SIZE][SIZE];$/;"	m	class:CPU
+rb	cpu.h	/^int rb[SIZE][SIZE];$/;"	v
+rb	cpu/auction.cpp	/^int rb[SIZE][SIZE];$/;"	v
+scalingFactor	cpu.h	/^    int scalingFactor;$/;"	m	class:CPU
+scalingFactor	cpu.h	/^int scalingFactor = 1;$/;"	v
+scalingFactor	cpu/auction.cpp	/^int scalingFactor = 1;$/;"	v
+solver	mcfAuction.cpp	/^class mcfAuction::public solver{$/;"	c	class:mcfAuction	file:

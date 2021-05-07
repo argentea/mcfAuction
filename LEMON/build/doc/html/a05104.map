@@ -1,0 +1,8 @@
+<map id="BpGraph::Node" name="BpGraph::Node">
+<area shape="rect" id="node1" title="The node type of the graph." alt="" coords="93,5,213,32"/>
+<area shape="rect" id="node2" href="$a05113.html" title="Class to represent blue nodes." alt="" coords="10,80,95,107"/>
+<area shape="rect" id="node4" href="$a05125.html" title="Iterator class for the nodes." alt="" coords="120,80,185,107"/>
+<area shape="rect" id="node5" href="$a05109.html" title="Class to represent red nodes." alt="" coords="210,80,290,107"/>
+<area shape="rect" id="node3" href="$a05121.html" title="Iterator class for the blue nodes." alt="" coords="5,155,100,181"/>
+<area shape="rect" id="node6" href="$a05117.html" title="Iterator class for the red nodes." alt="" coords="205,155,295,181"/>
+</map>

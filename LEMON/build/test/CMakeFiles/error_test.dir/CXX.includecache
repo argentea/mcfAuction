@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+..//lemon/assert.h
+lemon/error.h
+-
+
+..//lemon/error.h
+exception
+-
+string
+-
+sstream
+-
+iostream
+-
+cstdlib
+-
+memory
+-
+
+/home/yuanzhou/mcfAuction/LEMON/test/error_test.cc
+iostream
+-
+lemon/error.h
+-
+test_tools.h
+/home/yuanzhou/mcfAuction/LEMON/test/test_tools.h
+lemon/assert.h
+-
+lemon/assert.h
+-
+
+/home/yuanzhou/mcfAuction/LEMON/test/test_tools.h
+iostream
+-
+stdlib.h
+-
+

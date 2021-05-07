@@ -1,0 +1,6 @@
+<map id="BpGraph::Arc" name="BpGraph::Arc">
+<area shape="rect" id="node1" title="The arc type of the graph." alt="" coords="61,5,167,32"/>
+<area shape="rect" id="node2" href="$a05145.html" title="Iterator class for the arcs." alt="" coords="5,80,57,107"/>
+<area shape="rect" id="node3" href="$a05153.html" title="Iterator class for the incoming arcs of a node." alt="" coords="82,80,146,107"/>
+<area shape="rect" id="node4" href="$a05149.html" title="Iterator class for the outgoing arcs of a node." alt="" coords="170,80,245,107"/>
+</map>

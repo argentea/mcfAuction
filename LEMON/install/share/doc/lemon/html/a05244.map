@@ -1,0 +1,6 @@
+<map id="Graph::Arc" name="Graph::Arc">
+<area shape="rect" id="node1" title="The arc type of the graph." alt="" coords="69,5,159,32"/>
+<area shape="rect" id="node2" href="$a05249.html" title="Iterator class for the arcs." alt="" coords="5,80,57,107"/>
+<area shape="rect" id="node3" href="$a05257.html" title="Iterator class for the incoming arcs of a node." alt="" coords="82,80,146,107"/>
+<area shape="rect" id="node4" href="$a05253.html" title="Iterator class for the outgoing arcs of a node." alt="" coords="170,80,245,107"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="LpBase::Col" name="LpBase::Col">
+<area shape="rect" id="node1" title="Refer to a column of the LP." alt="" coords="5,5,104,32"/>
+<area shape="rect" id="node2" href="$a03349.html" title="Iterator for iterate over the columns of an LP problem." alt="" coords="29,80,81,107"/>
+</map>

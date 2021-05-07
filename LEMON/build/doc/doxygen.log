@@ -1,0 +1,118 @@
+error: Tag file '/home/yuanzhou/mcfAuction/LEMON/build/doc/libstdc++.tag' does not exist or is not a file. Skipping it...
+/home/yuanzhou/mcfAuction/LEMON/lemon/unionfind.h:1820: warning: unbalanced grouping commands
+/home/yuanzhou/mcfAuction/LEMON/doc/dirs.dox:28: warning: \dir command matches multiple directories.
+  Applying the command for directory /home/yuanzhou/mcfAuction/LEMON/build/doc/
+  Ignoring the command for directory /home/yuanzhou/mcfAuction/LEMON/doc/
+
+/home/yuanzhou/mcfAuction/LEMON/doc/dirs.dox:36: warning: No matching directory found for command \dir contrib/
+
+error: Problems running bibtex. Verify that the command 'perl --version' works from the command line. Exit code: 2
+error: Problems running latex. Check your installation or look for typos in _formulas.tex and check _formulas.log!
+error: Problems running dvips. Check your installation!
+/home/yuanzhou/mcfAuction/LEMON/doc/min_cost_flow.dox:28: warning: \cite command to 'amo93networkflows' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:311: warning: \cite command to 'clrs01algorithms' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:320: warning: \cite command to 'clrs01algorithms' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:338: warning: \cite command to 'clrs01algorithms' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/kruskal.h:302: warning: The following parameter of lemon::kruskal(const Graph &g, const In &in, Out &out) is not documented:
+  parameter 'out'
+/home/yuanzhou/mcfAuction/LEMON/lemon/min_cost_arborescence.h:794: warning: The following parameter of lemon::minCostArborescence(const Digraph &digraph, const CostMap &cost, typename Digraph::Node source, ArborescenceMap &arborescence) is not documented:
+  parameter 'arborescence'
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:347: warning: \cite command to 'clrs01algorithms' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:347: warning: \cite command to 'amo93networkflows' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:362: warning: \cite command to 'goldberg88newapproach' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:379: warning: \cite command to 'amo93networkflows' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:385: warning: \cite command to 'dantzig63linearprog' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:385: warning: \cite command to 'kellyoneill91netsimplex' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:387: warning: \cite command to 'goldberg90approximation' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:387: warning: \cite command to 'goldberg97efficient' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:388: warning: \cite command to 'bunnagel98efficient' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:390: warning: \cite command to 'edmondskarp72theoretical' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:392: warning: \cite command to 'klein67primal' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:392: warning: \cite command to 'goldberg89cyclecanceling' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:411: warning: \cite command to 'KiralyKovacs12MCF' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:452: warning: \cite command to 'amo93networkflows' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:452: warning: \cite command to 'karp78characterization' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:468: warning: \cite command to 'karp78characterization' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:470: warning: \cite command to 'hartmann93finding' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:472: warning: \cite command to 'dasdan98minmeancycle' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:472: warning: \cite command to 'dasdan04experimental' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/connectivity.h:143: warning: The following parameter of lemon::connectedComponents(const Graph &graph, NodeMap &compMap) is not documented:
+  parameter 'compMap'
+/home/yuanzhou/mcfAuction/LEMON/lemon/connectivity.h:407: warning: The following parameter of lemon::stronglyConnectedComponents(const Digraph &digraph, NodeMap &compMap) is not documented:
+  parameter 'compMap'
+/home/yuanzhou/mcfAuction/LEMON/lemon/connectivity.h:475: warning: The following parameter of lemon::stronglyConnectedCutArcs(const Digraph &digraph, ArcMap &cutMap) is not documented:
+  parameter 'cutMap'
+/home/yuanzhou/mcfAuction/LEMON/lemon/connectivity.h:844: warning: The following parameter of lemon::biNodeConnectedComponents(const Graph &graph, EdgeMap &compMap) is not documented:
+  parameter 'compMap'
+/home/yuanzhou/mcfAuction/LEMON/lemon/connectivity.h:892: warning: The following parameter of lemon::biNodeConnectedCutNodes(const Graph &graph, NodeMap &cutMap) is not documented:
+  parameter 'cutMap'
+/home/yuanzhou/mcfAuction/LEMON/lemon/connectivity.h:1188: warning: The following parameter of lemon::biEdgeConnectedComponents(const Graph &graph, NodeMap &compMap) is not documented:
+  parameter 'compMap'
+/home/yuanzhou/mcfAuction/LEMON/lemon/connectivity.h:1235: warning: The following parameter of lemon::biEdgeConnectedCutEdges(const Graph &graph, EdgeMap &cutMap) is not documented:
+  parameter 'cutMap'
+/home/yuanzhou/mcfAuction/LEMON/lemon/connectivity.h:1340: warning: The following parameter of lemon::topologicalSort(const Digraph &digraph, NodeMap &order) is not documented:
+  parameter 'order'
+/home/yuanzhou/mcfAuction/LEMON/lemon/connectivity.h:1382: warning: The following parameter of lemon::checkedTopologicalSort(const Digraph &digraph, NodeMap &order) is not documented:
+  parameter 'order'
+/home/yuanzhou/mcfAuction/LEMON/lemon/connectivity.h:1600: warning: The following parameter of lemon::bipartitePartitions(const Graph &graph, NodeMap &partMap) is not documented:
+  parameter 'partMap'
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:618: warning: \cite command to 'glpk' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:618: warning: \cite command to 'clp' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:618: warning: \cite command to 'cbc' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:619: warning: \cite command to 'cplex' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/doc/groups.dox:619: warning: \cite command to 'soplex' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/time_measure.h:590: warning: The following parameters of lemon::runningTimeTest(F f, double min_time=10, unsigned int *num=NULL, TimeStamp *full_time=NULL) are not documented:
+  parameter 'num'
+  parameter 'full_time'
+/home/yuanzhou/mcfAuction/LEMON/lemon/arg_parser.h:248: warning: The following parameter of lemon::ArgParser::refOption(const std::string &name, const std::string &help, int &ref, bool obl=false) is not documented:
+  parameter 'ref'
+/home/yuanzhou/mcfAuction/LEMON/lemon/arg_parser.h:259: warning: The following parameter of lemon::ArgParser::refOption(const std::string &name, const std::string &help, double &ref, bool obl=false) is not documented:
+  parameter 'ref'
+/home/yuanzhou/mcfAuction/LEMON/lemon/arg_parser.h:271: warning: The following parameter of lemon::ArgParser::refOption(const std::string &name, const std::string &help, bool &ref, bool obl=false) is not documented:
+  parameter 'ref'
+/home/yuanzhou/mcfAuction/LEMON/lemon/arg_parser.h:282: warning: The following parameter of lemon::ArgParser::refOption(const std::string &name, const std::string &help, std::string &ref, bool obl=false) is not documented:
+  parameter 'ref'
+/home/yuanzhou/mcfAuction/LEMON/lemon/bfs.h:502: warning: The following parameter of lemon::Bfs::processNextNode(Node target, bool &reach) is not documented:
+  parameter 'reach'
+/home/yuanzhou/mcfAuction/LEMON/lemon/bfs.h:538: warning: The following parameter of lemon::Bfs::processNextNode(const NM &nm, Node &rnode) is not documented:
+  parameter 'rnode'
+/home/yuanzhou/mcfAuction/LEMON/lemon/bfs.h:1503: warning: The following parameter of lemon::BfsVisit::processNextNode(Node target, bool &reach) is not documented:
+  parameter 'reach'
+/home/yuanzhou/mcfAuction/LEMON/lemon/bfs.h:1538: warning: The following parameter of lemon::BfsVisit::processNextNode(const NM &nm, Node &rnode) is not documented:
+  parameter 'rnode'
+/home/yuanzhou/mcfAuction/LEMON/lemon/capacity_scaling.h:67: warning: \cite command to 'amo93networkflows' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/capacity_scaling.h:68: warning: \cite command to 'edmondskarp72theoretical' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/cost_scaling.h:92: warning: \cite command to 'amo93networkflows' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/cost_scaling.h:93: warning: \cite command to 'goldberg90approximation' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/cost_scaling.h:94: warning: \cite command to 'goldberg97efficient' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/cost_scaling.h:94: warning: \cite command to 'bunnagel98efficient' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/cycle_canceling.h:48: warning: \cite command to 'amo93networkflows' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/cycle_canceling.h:48: warning: \cite command to 'klein67primal' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/cycle_canceling.h:49: warning: \cite command to 'goldberg89cyclecanceling' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/cycle_canceling.h:133: warning: \cite command to 'goldberg89cyclecanceling' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/cycle_canceling.h:139: warning: \cite command to 'goldberg89cyclecanceling' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/edmonds_karp.h:82: warning: \cite command to 'clrs01algorithms' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/edmonds_karp.h:82: warning: \cite command to 'amo93networkflows' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/edmonds_karp.h:83: warning: \cite command to 'edmondskarp72theoretical' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/grosso_locatelli_pullan_mc.h:41: warning: \cite command to 'grosso08maxclique' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/hartmann_orlin_mmc.h:99: warning: \cite command to 'hartmann93finding' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/hartmann_orlin_mmc.h:99: warning: \cite command to 'dasdan98minmeancycle' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/howard_mmc.h:99: warning: \cite command to 'dasdan98minmeancycle' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/howard_mmc.h:99: warning: \cite command to 'dasdan04experimental' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/karp_mmc.h:99: warning: \cite command to 'karp78characterization' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/karp_mmc.h:99: warning: \cite command to 'dasdan98minmeancycle' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/network_simplex.h:42: warning: \cite command to 'amo93networkflows' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/network_simplex.h:42: warning: \cite command to 'dantzig63linearprog' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/network_simplex.h:43: warning: \cite command to 'kellyoneill91netsimplex' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/preflow.h:104: warning: \cite command to 'clrs01algorithms' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/preflow.h:105: warning: \cite command to 'amo93networkflows' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/preflow.h:105: warning: \cite command to 'goldberg88newapproach' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/lemon/random.h:675: warning: Member real() (function) of class lemon::Random is not documented.
+/home/yuanzhou/mcfAuction/LEMON/lemon/random.h:734: warning: Member uinteger() (function) of class lemon::Random is not documented.
+/home/yuanzhou/mcfAuction/LEMON/lemon/random.h:750: warning: Member integer() (function) of class lemon::Random is not documented.
+/home/yuanzhou/mcfAuction/LEMON/build/doc/mainpage.dox:27: warning: \cite command to 'DezsoJuttnerKovacs11Lemon' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/build/doc/mainpage.dox:39: warning: \cite command to 'egres' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/build/doc/mainpage.dox:44: warning: \cite command to 'coinor' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/build/doc/mainpage.dox:27: warning: \cite command to 'DezsoJuttnerKovacs11Lemon' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/build/doc/mainpage.dox:39: warning: \cite command to 'egres' does not have an associated number
+/home/yuanzhou/mcfAuction/LEMON/build/doc/mainpage.dox:44: warning: \cite command to 'coinor' does not have an associated number
