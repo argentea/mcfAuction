@@ -1,6 +1,0 @@
-/home/yuanzhou/mcfAuction/test/lgf_test/build/CMakeFiles/rebuild_cache.dir
-/home/yuanzhou/mcfAuction/test/lgf_test/build/CMakeFiles/mcf.dir
-/home/yuanzhou/mcfAuction/test/lgf_test/build/CMakeFiles/edit_cache.dir
-/home/yuanzhou/mcfAuction/test/lgf_test/build/build/CMakeFiles/rebuild_cache.dir
-/home/yuanzhou/mcfAuction/test/lgf_test/build/build/CMakeFiles/gpulb.dir
-/home/yuanzhou/mcfAuction/test/lgf_test/build/build/CMakeFiles/edit_cache.dir

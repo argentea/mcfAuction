@@ -1,5 +1,6 @@
 #include "auction.cuh"
 #include "min_cost_flow_gpu.h"
+
 #define MAXMY 0x3f3f3f3f
 #define MAXCOST 10000
 namespace mcfgpu {
@@ -17,6 +18,9 @@ struct PushNode
 	int firstEdgeId;
 };
 
+
+
+template<class GRA, class NM, class AM, class NI, class AI>
 struct AuctionState
 {
 	struct PushEdge* kpushList;
@@ -24,7 +28,7 @@ struct AuctionState
 	int* kpushListFlag;
     bool* knodesRisePrice; ///< length of #nodes 
 
-    void initialize(Graph const& G)
+    void initialize(Graph<GRA, NM, AM, NI, AI> const& G)
     {
         printf("initialize state with %d nodes\n", G.getNodesNum());
 		kpushList = nullptr;
@@ -57,10 +61,11 @@ struct AuctionState
     }
 };
 
+template<class GRA, class NM, class AM, class NI, class AI>
 //pushlist is not good
 __device__ void pushFlow(
-		Graph &G,
-        AuctionState& state, 
+		Graph<GRA, NM, AM, NI, AI> &G,
+        AuctionState<GRA, NM, AM,NI, AI>& state, 
 		const int lnodes,
 		const int rnodes,
         const int node_step, 
@@ -70,8 +75,7 @@ __device__ void pushFlow(
 		const int epsilon,
 		const int knumNodes, 
 		int& kpushCount,
-		int& kpushFlag,
-        int *dflow
+		int& kpushFlag
 		){
 #if FULLDEBUG
 	if(threadIdx.x ==0){
@@ -184,7 +188,6 @@ __device__ void pushFlow(
 			state.kpushList[i].delta -= delta;
 			G.atomicSubGrow(tmpi, delta);
 			G.atomicAddGrow(tmpj, delta);
-            //dflow[i] = G.atFlow(i);
 		}
 	}
     
@@ -198,9 +201,12 @@ __device__ void pushFlow(
 
 	return ;
 }
+
+
+template<class GRA, class NM, class AM, class NI, class AI>
 __device__ void priceRise(
-		Graph &G,
-        AuctionState& state, 
+		Graph<GRA, NM, AM, NI, AI> &G,
+        AuctionState<GRA, NM, AM, NI, AI>& state, 
 		const int lnodes,
 		const int rnodes,
         const int node_step, 
@@ -273,10 +279,11 @@ __device__ void priceRise(
 
 }
 
+template<class GRA, class NM, class AM, class NI, class AI>
 __global__ void __launch_bounds__(1024)
 auction_algorithm_kernel(
-		Graph G, 
-        AuctionState state,
+		Graph<GRA, NM, AM, NI, AI> G, 
+        AuctionState<GRA, NM, AM, NI, AI> state,
         int *dTotalCost,
         int *dflow,
         int *dprice
@@ -391,8 +398,7 @@ auction_algorithm_kernel(
                     kepsilon,
                     knumNodes, 
 					kpushCount,
-					kpushFlag,
-                    dflow
+					kpushFlag
                     );
 			if(threadId == 0){
 				minRise = MAXMY;
@@ -500,106 +506,106 @@ auction_algorithm_kernel(
 		printf("kenerl end\n");
 
         *dTotalCost = tans;
-        int totalFlow = 0;
-        for (int i = 1; i <= min(G.getEdgesNum(), ledges); i ++) {
-            totalFlow += G.atFlow(i);
+        for (int i = 0; i < G.getEdgesNum(); ++i) {
             dflow[i] = G.atFlow(i);
         }
         int totalPrice = 0;
-        for (int i = lnodes; i < rnodes; i += node_step) {
+        for (int i = 0; i < G.getNodesNum(); ++i) {
             dprice[i] = G.atPrice(i);
             totalPrice += G.atPrice(i);
+            //printf("[%d] : %d\n", i, G.atPrice(i));
         }
 
-        printf("totalFlow: %d, totalPrice : %d\n", totalFlow, totalPrice);
 	}
 
 	__syncthreads();
 }
 
+
 hr_clock_rep timer_start, timer_mem, timer_stop;
-ProblemType GPU::run_auction(Graph auctionGraph, int threadNum){
+template<class G, class NM, class AM, class NI, class AI>
+void GPU<G, NM, AM, NI, AI>::run_auction(Graph<G, NM, AM, NI, AI> auctionGraph, int threadNum){
 	std::cout << "start run_auction\n";
-    ProblemType result = ProblemType::INFEASIBLE;
+    ProblemType status = ProblemType::INFEASIBLE;
 	cudaProfilerStart();
 	std::cout << "start kernel\n";
     
     size_t totalCostSize = sizeof(int);
     size_t flowSize = sizeof(int ) * numEdges;
-    size_t priceSize = sizeof(int) * numEdges;
+    size_t priceSize = sizeof(int) * numNodes;
 
     int *hTotalCost, *dTotalCost;
     hTotalCost = (int *)malloc(totalCostSize);
-    cudaMalloc(&dTotalCost, totalCostSize);
+    cudaMalloc((void **)&dTotalCost, totalCostSize);
     cudaMemcpy(dTotalCost, hTotalCost, totalCostSize, cudaMemcpyHostToDevice);
 
     int *hflow, *dflow;
-    hflow = (int *)calloc(numEdges, sizeof(int));
-    cudaMalloc(&dflow, flowSize);
-	cudaMemcpy(dflow, hflow, flowSize, cudaMemcpyHostToDevice);
+    hflow = (int *)malloc(flowSize);
+    cudaMalloc((void **)&dflow, flowSize);
+    cudaMemcpy(dflow, hflow, flowSize, cudaMemcpyHostToDevice);
 
     int *hprice, *dprice;
-    hprice = (int *)calloc(numEdges, sizeof(int));
+    hprice = (int *)malloc(priceSize);
     cudaMalloc(&dprice, priceSize);
 	cudaMemcpy(dprice, hprice, priceSize, cudaMemcpyHostToDevice);
 
 
-    AuctionState state; 
+    AuctionState<G, NM, AM, NI, AI> state; 
     state.initialize(auctionGraph);
     auction_algorithm_kernel<<<1,threadNum>>>
 		(
 		auctionGraph, 
       state, 
       dTotalCost,
-      dflow, 
+       dflow,
       dprice
 	);
-    result = ProblemType::OPTIMAL;
+    status = ProblemType::OPTIMAL;
     state.destroy();
 	cudaProfilerStop();
 	cudaDeviceSynchronize();
 	timer_stop = get_globaltime();
     
     cudaMemcpy(hTotalCost, dTotalCost, totalCostSize, cudaMemcpyDeviceToHost);
-    cudaMemcpy(hprice, dprice, priceSize, cudaMemcpyDeviceToHost);
     cudaMemcpy(hflow, dflow, flowSize, cudaMemcpyDeviceToHost); 
+    cudaMemcpy(hprice, dprice, priceSize, cudaMemcpyDeviceToHost);
     
-    memcpy(res.potential, hprice, sizeof(*hprice));
-    memcpy(res.flowMap, hflow, sizeof(*hflow));
-  
+    memcpy(res.flowMap, hflow, flowSize);
+    memcpy(res.potential, hprice, priceSize);
     res.totalCost = *hTotalCost;
+    res.pt = status;
+    
 
   /* if (res.totalCost > MAXCOST) {
         printf("totalcost is too big: %d\n", res.totalCost);
         result = ProblemType::UNBOUNDED;
     }
 */
-
     cudaFree(dTotalCost);
     cudaFree(dflow);
     cudaFree(dprice);
     free(hTotalCost);
     free(hflow);
     free(hprice);
-    return result;
+
+    return ;
 
 }
 
-
-extern "C" Result GPU::run(){
+template<class G, class NM, class AM, class NI, class AI>
+void GPU<G, NM, AM, NI, AI>::run(){
 	int threadNum = 1024;
-    ProblemType result = ProblemType::INFEASIBLE;
 //	initmy(&hC,hedges,hcost,hg,hlb,hrb	);
 	timer_start = get_globaltime();
-	Graph auctionGraph = Graph(Graph::edgeList, _map, _supply, _capacity_upper, _cost);
+	Graph<G, NM, AM, NI, AI> auctionGraph(Graph<G, NM, AM, NI, AI>::edgeList, _map, _supply, _capacity_upper, _cost);
 	timer_mem = get_globaltime();
 //	Graph auctionGraph = Graph(Graph::matrix,numNodes, numEdges, hC, hedges, hcost, hlb, hrb, hg);
 
-	result = run_auction(
+	run_auction(
 		auctionGraph,
 		threadNum
 	);
-	res.pt = result;
+
     std::cout << "run_acution takes "<< (timer_stop - timer_start)*get_timer_period() << "ms totally.\n";
 	std::cout << "memory copy takes "<< (timer_mem - timer_start)*get_timer_period() << "ms totally.\n";
 	std::cout << "kernel takes "<< (timer_stop - timer_mem)*get_timer_period() << "ms totally.\n";
@@ -607,8 +613,7 @@ extern "C" Result GPU::run(){
 	std::cerr << "run_acution takes "<< (timer_stop - timer_start)*get_timer_period() << "ms totally.\n";
 	std::cerr << "memory copy takes "<< (timer_mem - timer_start)*get_timer_period() << "ms totally.\n";
 	std::cerr << "kernel takes "<< (timer_stop - timer_mem)*get_timer_period() << "ms totally.\n";
-	return res;
+	return ;
 } 
-
 
 };//end namespace mcfgpu

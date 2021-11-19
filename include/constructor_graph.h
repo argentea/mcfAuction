@@ -11,18 +11,20 @@
 #include <memory>
 namespace mcfgraph {
 
+template<class G, class NMI, class NMS, class AM, class N>
 class Graph {
 private:
-    std::shared_ptr<GraphImpl> impl_;
+    std::shared_ptr<GraphImpl<G, NMI, NMS, AM, N>> impl_;
 public:
-    Graph(std::shared_ptr<GraphImpl> impl):impl_(std::move(impl)){}
+    Graph(std::shared_ptr<GraphImpl<G, NMI, NMS, AM, N>> impl):impl_(std::move(impl)){}
     auto impl() { 
         return impl_; 
     }
 };
 
+template<typename G, typename NMI, typename NMS, typename AM, typename N>
 auto makeGraph(){ 
-    return Graph(std::make_shared<GraphImpl>()); 
+    return Graph<G, NMI, NMS, AM, N>(std::make_shared<GraphImpl<G, NMI, NMS, AM, N>>()); 
 }
 
 };

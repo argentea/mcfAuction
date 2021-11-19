@@ -1,1 +1,0 @@
-/usr/bin/c++  -std=c++14 -Wall -fPIC -O3  -rdynamic CMakeFiles/mcf.dir/test.cpp.o CMakeFiles/mcf.dir/home/yuanzhou/mcfAuction/min_cost_flow/cpu/auction.cpp.o CMakeFiles/mcf.dir/home/yuanzhou/mcfAuction/min_cost_flow/lgf_api/smartdigraph.cpp.o  -o ../bin/mcf build/libgpulb.a /usr/local/cuda-10.1/lib64/libcudart_static.a -lpthread -ldl -lrt 

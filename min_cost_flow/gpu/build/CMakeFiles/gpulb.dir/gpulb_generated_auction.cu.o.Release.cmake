@@ -58,20 +58,20 @@ endif()
 
 # Set these up as variables to make reading the generated file easier
 set(CMAKE_COMMAND "/usr/bin/cmake") # path
-set(source_file "/home/yuanzhou/mcfAuction/src/gpu/auction.cu") # path
-set(NVCC_generated_dependency_file "/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir//gpulb_generated_auction.cu.o.NVCC-depend") # path
-set(cmake_dependency_file "/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir//gpulb_generated_auction.cu.o.depend") # path
+set(source_file "/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/auction.cu") # path
+set(NVCC_generated_dependency_file "/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir//gpulb_generated_auction.cu.o.NVCC-depend") # path
+set(cmake_dependency_file "/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir//gpulb_generated_auction.cu.o.depend") # path
 set(CUDA_make2cmake "/usr/share/cmake-3.10/Modules/FindCUDA/make2cmake.cmake") # path
 set(CUDA_parse_cubin "/usr/share/cmake-3.10/Modules/FindCUDA/parse_cubin.cmake") # path
 set(build_cubin OFF) # bool
 set(CUDA_HOST_COMPILER "/usr/bin/cc") # path
 # We won't actually use these variables for now, but we need to set this, in
 # order to force this file to be run again if it changes.
-set(generated_file_path "/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir//.") # path
-set(generated_file_internal "/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir//./gpulb_generated_auction.cu.o") # path
-set(generated_cubin_file_internal "/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir//./gpulb_generated_auction.cu.o.cubin.txt") # path
+set(generated_file_path "/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir//.") # path
+set(generated_file_internal "/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir//./gpulb_generated_auction.cu.o") # path
+set(generated_cubin_file_internal "/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir//./gpulb_generated_auction.cu.o.cubin.txt") # path
 
-set(CUDA_NVCC_EXECUTABLE "/usr/local/cuda-10.1/bin/nvcc") # path
+set(CUDA_NVCC_EXECUTABLE "/usr/local/cuda/bin/nvcc") # path
 set(CUDA_NVCC_FLAGS -std=c++14 ;; ) # list
 # Build specific configuration flags
 set(CUDA_NVCC_FLAGS_DEBUG  ; )
@@ -79,7 +79,7 @@ set(CUDA_NVCC_FLAGS_MINSIZEREL  ; )
 set(CUDA_NVCC_FLAGS_RELEASE  ; )
 set(CUDA_NVCC_FLAGS_RELWITHDEBINFO  ; )
 set(nvcc_flags -m64) # list
-set(CUDA_NVCC_INCLUDE_DIRS "/usr/local/cuda-10.1/include;/home/yuanzhou/mcfAuction/src/gpu;/home/yuanzhou/mcfAuction/LEMON/install/include;/home/yuanzhou/mcfAuction/include;/usr/local/cuda-10.1/include") # list (needs to be in quotes to handle spaces properly).
+set(CUDA_NVCC_INCLUDE_DIRS "/usr/local/cuda/include;/home/kunpengjiang/mcfAuction/min_cost_flow/gpu;/home/yuanzhou/mcfAuction/LEMON/install/include;/home/yuanzhou/mcfAuction/include;/usr/local/cuda/include") # list (needs to be in quotes to handle spaces properly).
 set(CUDA_NVCC_COMPILE_DEFINITIONS [==[_GLIBCXX_USE_CXX11_ABI=0]==]) # list (needs to be in lua quotes see #16510 ).
 set(format_flag "-c") # string
 set(cuda_language_flag ) # list

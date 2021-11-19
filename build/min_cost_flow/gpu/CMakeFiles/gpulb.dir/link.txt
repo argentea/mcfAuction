@@ -1,2 +1,0 @@
-/usr/bin/ar qc libgpulb.a  CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o
-/usr/bin/ranlib libgpulb.a

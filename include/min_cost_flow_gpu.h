@@ -1,5 +1,5 @@
 /*************************************************************************
-	> File Name: min_cost_flow_gpu.h
+	> File NSmartDigraph::ArcMap<int>e: min_cost_flow_gpu.h
 	> Author: zhouyuan
 	> Mail: 3294207721@qq.com 
 	> Created Time: Mon Apr 26 07:00:49 2021
@@ -28,7 +28,11 @@ typedef struct result{
     
 } Result;
 
+
+template<class G, class NM, class AM, class NI, class AI>
 class Graph;
+
+template<class G, class NM, class AM, class NI, class AI>
 class GPU{
 public:
     GPU( 
@@ -42,25 +46,21 @@ public:
         _cost(cost){
             numNodes = countNodes(map);
             numEdges = countArcs(map);
-            res.flowMap = new int(numEdges);
-            res.potential = new int(numNodes);
+            res.flowMap = new int[numEdges]();
+            res.potential = new int[numNodes]();
         }
 
-    Result run();
-  // int totalCost() { }
+    void run();
+    Result getResult() {
+        return res;
+    }
 
-
-   void setFlow(int i, int value) {
-        res.flowMap[i] = value;
-   }
-
- //   int potentialMap() {}
     ~GPU(){
         delete[] res.flowMap;
         delete[] res.potential;
     }
 private:
-    ProblemType run_auction(Graph auctionGraph, int threadNum);
+    void run_auction(Graph<G, NM, AM, NI, AI> auctionGraph, int threadNum);
     SmartDigraph &_map;
     SmartDigraph::NodeMap<int> *_supply;
     SmartDigraph::ArcMap<int> *_capacity_upper;

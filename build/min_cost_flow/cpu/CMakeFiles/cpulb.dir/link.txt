@@ -1,2 +1,0 @@
-/usr/bin/ar qc libcpulb.a  CMakeFiles/cpulb.dir/auction.cpp.o
-/usr/bin/ranlib libcpulb.a

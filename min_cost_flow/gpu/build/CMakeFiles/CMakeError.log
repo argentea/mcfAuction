@@ -1,24 +1,24 @@
 Determining if the pthread_create exist failed with the following output:
-Change Dir: /home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/CMakeTmp
+Change Dir: /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_3eace/fast"
-/usr/bin/make -f CMakeFiles/cmTC_3eace.dir/build.make CMakeFiles/cmTC_3eace.dir/build
-make[1]: Entering directory '/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_3eace.dir/CheckSymbolExists.c.o
-/usr/bin/cc   -fPIC    -o CMakeFiles/cmTC_3eace.dir/CheckSymbolExists.c.o   -c /home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
-Linking C executable cmTC_3eace
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3eace.dir/link.txt --verbose=1
-/usr/bin/cc -fPIC     -rdynamic CMakeFiles/cmTC_3eace.dir/CheckSymbolExists.c.o  -o cmTC_3eace 
-CMakeFiles/cmTC_3eace.dir/CheckSymbolExists.c.o: In function `main':
+Run Build Command:"/usr/bin/make" "cmTC_bc12f/fast"
+/usr/bin/make -f CMakeFiles/cmTC_bc12f.dir/build.make CMakeFiles/cmTC_bc12f.dir/build
+make[1]: Entering directory '/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_bc12f.dir/CheckSymbolExists.c.o
+/usr/bin/cc   -fPIC    -o CMakeFiles/cmTC_bc12f.dir/CheckSymbolExists.c.o   -c /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_bc12f
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bc12f.dir/link.txt --verbose=1
+/usr/bin/cc -fPIC     -rdynamic CMakeFiles/cmTC_bc12f.dir/CheckSymbolExists.c.o  -o cmTC_bc12f 
+CMakeFiles/cmTC_bc12f.dir/CheckSymbolExists.c.o: In function `main':
 CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_3eace.dir/build.make:97: recipe for target 'cmTC_3eace' failed
-make[1]: *** [cmTC_3eace] Error 1
-make[1]: Leaving directory '/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/CMakeTmp'
-Makefile:126: recipe for target 'cmTC_3eace/fast' failed
-make: *** [cmTC_3eace/fast] Error 2
+CMakeFiles/cmTC_bc12f.dir/build.make:97: recipe for target 'cmTC_bc12f' failed
+make[1]: *** [cmTC_bc12f] Error 1
+make[1]: Leaving directory '/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_bc12f/fast' failed
+make: *** [cmTC_bc12f/fast] Error 2
 
-File /home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+File /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
 /* */
 #include <pthread.h>
 
@@ -34,22 +34,40 @@ int main(int argc, char** argv)
 }
 
 Determining if the function pthread_create exists in the pthreads failed with the following output:
-Change Dir: /home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/CMakeTmp
+Change Dir: /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_49a2f/fast"
-/usr/bin/make -f CMakeFiles/cmTC_49a2f.dir/build.make CMakeFiles/cmTC_49a2f.dir/build
-make[1]: Entering directory '/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_49a2f.dir/CheckFunctionExists.c.o
-/usr/bin/cc   -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_49a2f.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.10/Modules/CheckFunctionExists.c
-Linking C executable cmTC_49a2f
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_49a2f.dir/link.txt --verbose=1
-/usr/bin/cc -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_49a2f.dir/CheckFunctionExists.c.o  -o cmTC_49a2f -lpthreads 
+Run Build Command:"/usr/bin/make" "cmTC_58492/fast"
+/usr/bin/make -f CMakeFiles/cmTC_58492.dir/build.make CMakeFiles/cmTC_58492.dir/build
+make[1]: Entering directory '/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_58492.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_58492.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.10/Modules/CheckFunctionExists.c
+Linking C executable cmTC_58492
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_58492.dir/link.txt --verbose=1
+/usr/bin/cc -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_58492.dir/CheckFunctionExists.c.o  -o cmTC_58492 -lpthreads 
 /usr/bin/ld: cannot find -lpthreads
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_49a2f.dir/build.make:97: recipe for target 'cmTC_49a2f' failed
-make[1]: *** [cmTC_49a2f] Error 1
-make[1]: Leaving directory '/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/CMakeTmp'
-Makefile:126: recipe for target 'cmTC_49a2f/fast' failed
-make: *** [cmTC_49a2f/fast] Error 2
+CMakeFiles/cmTC_58492.dir/build.make:97: recipe for target 'cmTC_58492' failed
+make[1]: *** [cmTC_58492] Error 1
+make[1]: Leaving directory '/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_58492/fast' failed
+make: *** [cmTC_58492/fast] Error 2
+
+
+Compiling the CUDA compiler identification source file "CMakeCUDACompilerId.cu" failed.
+Compiler: CMAKE_CUDA_COMPILER-NOTFOUND 
+Build flags: 
+Id flags:  -v;--keep;--keep-dir;tmp
+
+The output was:
+No such file or directory
+
+
+Compiling the CUDA compiler identification source file "CMakeCUDACompilerId.cu" failed.
+Compiler: CMAKE_CUDA_COMPILER-NOTFOUND 
+Build flags: 
+Id flags:  -v;--keep;--keep-dir;tmp
+
+The output was:
+No such file or directory
 
 

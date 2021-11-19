@@ -43,7 +43,7 @@ inline double get_timer_period(void)
 	using namespace std::chrono;
 	return 1000.0 * high_resolution_clock::period::num / high_resolution_clock::period::den;
 }
-
+template <class G, class NM, class AM, class NI, class AI>
 class Graph{
 	public:
 		enum graphType {matrix, edgeList};
@@ -112,10 +112,11 @@ class Graph{
 		}
 		Graph(
                 graphType htype, 
-                SmartDigraph &map, 
-                SmartDigraph::NodeMap<int> *supply, 
-                SmartDigraph::ArcMap<int> *capacity_uppper,
-                SmartDigraph::ArcMap<int> *cost){
+                G &map, 
+                NM *supply, 
+                AM *capacity_uppper,
+                AM *cost)
+        {
 			type = htype;
 			int sizeNodeArray = 0;
 			int sizeEdgeArray = 0;
@@ -138,12 +139,12 @@ class Graph{
             std::vector<int> hcost (sizeEdgeArray); 
             
             
-            for (SmartDigraph::NodeIt n(map); n != INVALID; ++n) {
+            for (NI n(map); n != INVALID; ++n) {
                 int cnt = map.id(n);
                 hgrow[cnt] = (*supply)[n];
             }
 
-            for (SmartDigraph::ArcIt arc(map); arc != INVALID; ++arc) {
+            for (AI arc(map); arc != INVALID; ++arc) {
                 int cnt = map.id(arc);
                 int sta = map.id(map.source(arc));
                 int end = map.id(map.target(arc)); 

@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yuanzhou/mcfAuction/src/gpu
+CMAKE_SOURCE_DIR = /home/kunpengjiang/mcfAuction/min_cost_flow/gpu
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yuanzhou/mcfAuction/src/gpu/build
+CMAKE_BINARY_DIR = /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/gpulb.dir/depend.make
@@ -57,6 +57,8 @@ include CMakeFiles/gpulb.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/gpulb.dir/flags.make
 
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: ../auction.cu
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: ../auction.cuh
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEMON/install/include/lemon/assert.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEMON/install/include/lemon/bits/alteration_notifier.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEMON/install/include/lemon/bits/array_map.h
@@ -72,11 +74,14 @@ CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEM
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEMON/install/include/lemon/config.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEMON/install/include/lemon/core.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEMON/install/include/lemon/error.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEMON/install/include/lemon/lgf_reader.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEMON/install/include/lemon/lgf_writer.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEMON/install/include/lemon/maps.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEMON/install/include/lemon/math.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEMON/install/include/lemon/network_simplex.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/LEMON/install/include/lemon/smart_graph.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/include/graph.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /home/yuanzhou/mcfAuction/include/min_cost_flow_gpu.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: ../auction.cu
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: ../auction.cuh
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/alloca.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/asm-generic/errno-base.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/asm-generic/errno.h
@@ -133,6 +138,7 @@ CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/share
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/shared_ptr_base.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/sstream.tcc
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/std_abs.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/std_function.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_algo.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_algobase.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_bvector.h
@@ -143,10 +149,15 @@ CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_i
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_iterator_base_funcs.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_iterator_base_types.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_list.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_map.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_multimap.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_multiset.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_pair.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_raw_storage_iter.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_relops.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_set.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_tempbuf.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_tree.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_uninitialized.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stl_vector.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/bits/stream_iterator.h
@@ -180,6 +191,7 @@ CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/ext/numeri
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/ext/string_conversions.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/ext/type_traits.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/fstream
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/functional
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/initializer_list
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/ios
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/iosfwd
@@ -188,11 +200,13 @@ CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/istream
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/iterator
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/limits
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/list
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/map
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/math.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/memory
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/new
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/ostream
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/ratio
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/set
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/sstream
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/stdexcept
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/include/c++/7/stdlib.h
@@ -322,74 +336,74 @@ CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/lib/gcc/x86_64-linux-gnu
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/lib/gcc/x86_64-linux-gnu/7/include/stdarg.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/lib/gcc/x86_64-linux-gnu/7/include/stddef.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/lib/gcc/x86_64-linux-gnu/7/include/stdint.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/builtin_types.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/channel_descriptor.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/crt/common_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/crt/device_double_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/crt/device_double_functions.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/crt/device_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/crt/device_functions.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/crt/host_config.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/crt/host_defines.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/crt/math_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/crt/math_functions.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/crt/sm_70_rt.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/crt/sm_70_rt.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/cuda_device_runtime_api.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/cuda_profiler_api.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/cuda_runtime.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/cuda_runtime_api.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/cuda_surface_types.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/cuda_texture_types.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/device_atomic_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/device_atomic_functions.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/device_launch_parameters.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/device_types.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/driver_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/driver_types.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/library_types.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_20_atomic_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_20_atomic_functions.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_20_intrinsics.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_20_intrinsics.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_30_intrinsics.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_30_intrinsics.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_32_atomic_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_32_atomic_functions.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_32_intrinsics.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_32_intrinsics.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_35_atomic_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_35_intrinsics.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_60_atomic_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_60_atomic_functions.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_61_intrinsics.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/sm_61_intrinsics.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/surface_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/surface_indirect_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/surface_types.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/texture_fetch_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/texture_indirect_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/texture_types.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/vector_functions.h
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/vector_functions.hpp
-CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda-10.1/include/vector_types.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/builtin_types.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/channel_descriptor.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/crt/common_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/crt/device_double_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/crt/device_double_functions.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/crt/device_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/crt/device_functions.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/crt/host_config.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/crt/host_defines.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/crt/math_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/crt/math_functions.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/crt/sm_70_rt.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/crt/sm_70_rt.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/cuda_device_runtime_api.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/cuda_profiler_api.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/cuda_runtime.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/cuda_runtime_api.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/cuda_surface_types.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/cuda_texture_types.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/device_atomic_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/device_atomic_functions.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/device_launch_parameters.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/device_types.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/driver_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/driver_types.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/library_types.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_20_atomic_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_20_atomic_functions.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_20_intrinsics.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_20_intrinsics.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_30_intrinsics.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_30_intrinsics.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_32_atomic_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_32_atomic_functions.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_32_intrinsics.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_32_intrinsics.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_35_atomic_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_35_intrinsics.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_60_atomic_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_60_atomic_functions.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_61_intrinsics.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/sm_61_intrinsics.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/surface_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/surface_indirect_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/surface_types.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/texture_fetch_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/texture_indirect_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/texture_types.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/vector_functions.h
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/vector_functions.hpp
+CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: /usr/local/cuda/include/vector_types.h
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o.Release.cmake
 CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o: ../auction.cu
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building NVCC (Device) object CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o"
-	cd /home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir && /usr/bin/cmake -E make_directory /home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir//.
-	cd /home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir && /usr/bin/cmake -D verbose:BOOL=$(VERBOSE) -D build_configuration:STRING=Release -D generated_file:STRING=/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir//./gpulb_generated_auction.cu.o -D generated_cubin_file:STRING=/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir//./gpulb_generated_auction.cu.o.cubin.txt -P /home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir//gpulb_generated_auction.cu.o.Release.cmake
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building NVCC (Device) object CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o"
+	cd /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir && /usr/bin/cmake -E make_directory /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir//.
+	cd /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir && /usr/bin/cmake -D verbose:BOOL=$(VERBOSE) -D build_configuration:STRING=Release -D generated_file:STRING=/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir//./gpulb_generated_auction.cu.o -D generated_cubin_file:STRING=/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir//./gpulb_generated_auction.cu.o.cubin.txt -P /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir//gpulb_generated_auction.cu.o.Release.cmake
 
 # Object files for target gpulb
 gpulb_OBJECTS =
 
 # External object files for target gpulb
 gpulb_EXTERNAL_OBJECTS = \
-"/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o"
+"/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o"
 
 libgpulb.a: CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o
 libgpulb.a: CMakeFiles/gpulb.dir/build.make
 libgpulb.a: CMakeFiles/gpulb.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libgpulb.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libgpulb.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/gpulb.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/gpulb.dir/link.txt --verbose=$(VERBOSE)
 
@@ -407,6 +421,6 @@ CMakeFiles/gpulb.dir/clean:
 .PHONY : CMakeFiles/gpulb.dir/clean
 
 CMakeFiles/gpulb.dir/depend: CMakeFiles/gpulb.dir/gpulb_generated_auction.cu.o
-	cd /home/yuanzhou/mcfAuction/src/gpu/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/yuanzhou/mcfAuction/src/gpu /home/yuanzhou/mcfAuction/src/gpu /home/yuanzhou/mcfAuction/src/gpu/build /home/yuanzhou/mcfAuction/src/gpu/build /home/yuanzhou/mcfAuction/src/gpu/build/CMakeFiles/gpulb.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/kunpengjiang/mcfAuction/min_cost_flow/gpu /home/kunpengjiang/mcfAuction/min_cost_flow/gpu /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build /home/kunpengjiang/mcfAuction/min_cost_flow/gpu/build/CMakeFiles/gpulb.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/gpulb.dir/depend
 

@@ -66,7 +66,7 @@ include_directories("/usr/local/cuda/lib64")
 
 #set(SRC min_cost_flow/cpu/auction.cpp min_cost_flow/smartdigraph.cpp)
 file(GLOB SOURCE test.cpp)
-file(GLOB EXE_SOURCE ${MIN_COST_FLOW}/min_cost_flow/cpu/* ${MIN_COST_FLOW}/min_cost_flow/gpu/* ${MIN_COST_FLOW}/min_cost_flow/lgf_api/*)
+file(GLOB EXE_SOURCE ${MIN_COST_FLOW}/min_cost_flow/cpu/* ${MIN_COST_FLOW}/min_cost_flow/gpu/*)
 
 #set(SRC min_cost_flow/smartdigraph.cpp)
 #set(SRC_EXE test/test.cpp)
@@ -77,7 +77,6 @@ include_directories(
     ${MIN_COST_FLOW}/LEMON/install/include
     ${MIN_COST_FLOW}/include
     ${MIN_COST_FLOW}/min_cost_flow/gpu
-    ${MIN_COST_FLOW}/min_cost_flow/lgf_api
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE} ${EXE_SOURCE})
