@@ -1,4 +1,28 @@
 #include "cpu.h"
+#include<iostream>
+#include<chrono>
+#include<ctime>
+#include<fstream>
+#include<memory.h>
+#include<algorithm>
+#include <chrono>
+#include <cstdlib>
+#include <string>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+
+#define NUM_THREADS 16
+#define SIZE 256
+#define EDGESIZE 2048
+#define MAXMY 0x3f3f
+#define MAXITERATer 10000
+using namespace std;
+bool GDEBUG = 0;
+int costScale = 1;
+int scalingFactor = 1;
+int gdelta = 0;
 
 
 namespace mcfcpu {
@@ -96,7 +120,6 @@ int CPU::initmy(){
 		edges[edgeNum][0] = ti;
 		edges[edgeNum][1] = tj;
 		edgeNum++;
-
 		cin >> lb[ti][tj] >> rb[ti][tj]>>  cost[ti][tj] ;
 //		cout << a << "\t" << ti << " " << tj << " " << cost[ti][tj] <<" " << lb[ti][tj] << " " << rb[ti][tj] <<  endl;
 //		cost[ti][tj] *= nodeNum;
@@ -310,6 +333,33 @@ void CPU::run() {
 	int tmpb = 0;
 	int tmpi = 0;
 	scalingFactor = 2;
+	epsilon = 1;
+	for(int i = 0 ; i < SIZE; i++){
+		g[i] = graw[i];
+	}
+	while(!check()){
+		tmpb = 0;
+		pushMy();
+		priceRise();
+			for(int i = 0; i < nodeNum; i++){
+			if(g[i] > 0){
+				tmpb+=g[i];
+			}
+		}
+		if(tmpb != tmpa){
+			cout << "iteratorNum:" << tmpa << "  to  "<<tmpb << "  is  " << iteratorNum - tmpi  << "  now iterateNum is  " << iteratorNum<<
+					"   epsilon is: " << epsilon << endl;
+			tmpi = iteratorNum;
+			tmpa = tmpb;
+		}
+
+		iteratorNum++;
+	}
+	int ans = 0;
+	for(int i = 0; i < nodeNum; i++){
+		for(int j = 0; j < nodeNum; j++){
+			ans += flow[i][j]*cost[i][j];
+		}
 	while(costScale >= 0){
 		memset(flow, 0, sizeof(flow));
 		for(int i = 0 ; i < SIZE; i++){

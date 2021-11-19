@@ -1,7 +1,7 @@
 CXX=g++
 SHELL=/bin/bash
 
-DATADIR=../data
+DATADIR=../data/good
 LOGDIR=./log
 
 override PRETESTDATA=data1.min
