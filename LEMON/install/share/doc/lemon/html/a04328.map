@@ -1,0 +1,4 @@
+<map id="Timer" name="Timer">
+<area shape="rect" id="node1" title="Class for measuring the cpu time and real time usage of the process." alt="" coords="24,5,84,32"/>
+<area shape="rect" id="node2" href="$a04333.html" title="Same as Timer but prints a report on destruction." alt="" coords="5,80,103,107"/>
+</map>

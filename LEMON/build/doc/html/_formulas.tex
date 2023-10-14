@@ -1,0 +1,316 @@
+\documentclass{article}
+\usepackage{ifthen}
+\usepackage{epsfig}
+\usepackage[utf8]{inputenc}
+% Packages requested by user
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{newunicodechar}
+  \newunicodechar{⁻}{${}^{-}$}% Superscript minus
+  \newunicodechar{²}{${}^{2}$}% Superscript two
+  \newunicodechar{³}{${}^{3}$}% Superscript three
+
+\pagestyle{empty}
+\begin{document}
+$G=(V,A)$
+\pagebreak
+
+$cap: A\rightarrow\mathbf{R}^+_0$
+\pagebreak
+
+$s, t \in V$
+\pagebreak
+
+$f: A\rightarrow\mathbf{R}^+_0$
+\pagebreak
+
+\[ \max\sum_{sv\in A} f(sv) - \sum_{vs\in A} f(vs) \]
+\pagebreak
+
+\[ \sum_{uv\in A} f(uv) = \sum_{vu\in A} f(vu) \quad \forall u\in V\setminus\{s,t\} \]
+\pagebreak
+
+\[ 0 \leq f(uv) \leq cap(uv) \quad \forall uv\in A \]
+\pagebreak
+
+$X$
+\pagebreak
+
+\[ \min_{X \subset V, X\not\in \{\emptyset, V\}} \sum_{uv\in A: u\in X, v\not\in X}cap(uv) \]
+\pagebreak
+
+$\epsilon$
+\pagebreak
+
+$lower: A\rightarrow\mathbf{R}$
+\pagebreak
+
+$upper: A\rightarrow\mathbf{R}\cup\{+\infty\}$
+\pagebreak
+
+$lower(uv) \leq upper(uv)$
+\pagebreak
+
+$uv\in A$
+\pagebreak
+
+$cost: A\rightarrow\mathbf{R}$
+\pagebreak
+
+$sup: V\rightarrow\mathbf{R}$
+\pagebreak
+
+$sup(u)>0$
+\pagebreak
+
+$u$
+\pagebreak
+
+$sup(u)$
+\pagebreak
+
+$sup(u)<0$
+\pagebreak
+
+$-sup(u)$
+\pagebreak
+
+$f: A\rightarrow\mathbf{R}$
+\pagebreak
+
+\[ \min\sum_{uv\in A} f(uv) \cdot cost(uv) \]
+\pagebreak
+
+\[ \sum_{uv\in A} f(uv) - \sum_{vu\in A} f(vu) \geq sup(u) \quad \forall u\in V \]
+\pagebreak
+
+\[ lower(uv) \leq f(uv) \leq upper(uv) \quad \forall uv\in A \]
+\pagebreak
+
+$\sum_{u\in V} sup(u)$
+\pagebreak
+
+$\pi: V\rightarrow\mathbf{R}$
+\pagebreak
+
+$cost^\pi(uv)>0$
+\pagebreak
+
+$f(uv)=lower(uv)$
+\pagebreak
+
+$lower(uv)<f(uv)<upper(uv)$
+\pagebreak
+
+$cost^\pi(uv)=0$
+\pagebreak
+
+$cost^\pi(uv)<0$
+\pagebreak
+
+$f(uv)=upper(uv)$
+\pagebreak
+
+$u\in V$
+\pagebreak
+
+$\pi(u)\leq 0$
+\pagebreak
+
+$\sum_{uv\in A} f(uv) - \sum_{vu\in A} f(vu) \neq sup(u)$
+\pagebreak
+
+$\pi(u)=0$
+\pagebreak
+
+$cost^\pi(uv)$
+\pagebreak
+
+$\pi$
+\pagebreak
+
+\[ cost^\pi(uv) = cost(uv) + \pi(u) - \pi(v).\]
+\pagebreak
+
+\[ \sum_{uv\in A} f(uv) - \sum_{vu\in A} f(vu) = sup(u) \quad \forall u\in V \]
+\pagebreak
+
+\[ \sum_{uv\in A} f(uv) - \sum_{vu\in A} f(vu) \leq sup(u) \quad \forall u\in V \]
+\pagebreak
+
+$\pi(u)\geq 0$
+\pagebreak
+
+$ G=(V, A) $
+\pagebreak
+
+$ F $
+\pagebreak
+
+$ flow, cap: A\to F $
+\pagebreak
+
+$ V $
+\pagebreak
+
+$ A_{forward}\cup A_{backward} $
+\pagebreak
+
+$ A_{forward}=\{uv : uv\in A, flow(uv)<cap(uv)\} $
+\pagebreak
+
+$ A_{backward}=\{vu : uv\in A, flow(uv)>0\} $
+\pagebreak
+
+$ |A_{forward}| + |A_{backward}|$
+\pagebreak
+
+$ u $
+\pagebreak
+
+$ u_{in} $
+\pagebreak
+
+$ u_{out} $
+\pagebreak
+
+$ (v, u) $
+\pagebreak
+
+$ (u, v) $
+\pagebreak
+
+$O(m\log U (n+m)\log n)$
+\pagebreak
+
+$upper: A\rightarrow\mathbf{R}\cup\{\infty\}$
+\pagebreak
+
+\[ \sum_{uv\in A} f(uv) - \sum_{vu\in A} f(vu) \geq sup(u) \quad \forall u\in V, \]
+\pagebreak
+
+\[ lower(uv) \leq f(uv) \leq upper(uv) \quad \forall uv\in A. \]
+\pagebreak
+
+\[ \sum_{uv\in A: u\in B} upper(uv) - \sum_{uv\in A: v\in B} lower(uv) < \sum_{v\in B} sup(v) \]
+\pagebreak
+
+$O(n^2m\log(nK))$
+\pagebreak
+
+$O(n^2 m^2 \log n)$
+\pagebreak
+
+$O(n^2 m^3 \log n)$
+\pagebreak
+
+$ O(nm^2) $
+\pagebreak
+
+\[ \sum_{e \in \delta(u)}x_e \le 1 \quad \forall u\in V\]
+\pagebreak
+
+\[x_e \ge 0\quad \forall e\in E\]
+\pagebreak
+
+\[\max \sum_{e\in E}x_e\]
+\pagebreak
+
+$\delta(X)$
+\pagebreak
+
+$O(nm\log n)$
+\pagebreak
+
+\[\max \sum_{e\in E}x_ew_e\]
+\pagebreak
+
+\[ y_u + y_v \ge w_{uv} \quad \forall uv\in E\]
+\pagebreak
+
+\[y_u \ge 0 \quad \forall u \in V\]
+\pagebreak
+
+\[\min \sum_{u \in V}y_u \]
+\pagebreak
+
+\[ \sum_{e \in \delta(u)}x_e = 1 \quad \forall u\in V\]
+\pagebreak
+
+$O(n^3\sqrt{m})$
+\pagebreak
+
+$D=(V,A)$
+\pagebreak
+
+$ source \in V $
+\pagebreak
+
+$ source $
+\pagebreak
+
+$ X\subsetneq V $
+\pagebreak
+
+$ source \in X $
+\pagebreak
+
+$ source \notin X $
+\pagebreak
+
+$ D $
+\pagebreak
+
+$ O(n^2\sqrt{m}) $
+\pagebreak
+
+$O(nm)$
+\pagebreak
+
+$ O(nm + n^2 \log n) $
+\pagebreak
+
+$ X $
+\pagebreak
+
+\[ \sum_{e \in \gamma(B)}x_e \le \frac{\vert B \vert - 1}{2} \quad \forall B\in\mathcal{O}\]
+\pagebreak
+
+$\gamma(X)$
+\pagebreak
+
+$\mathcal{O}$
+\pagebreak
+
+\[ y_u + y_v + \sum_{B \in \mathcal{O}, uv \in \gamma(B)} z_B \ge w_{uv} \quad \forall uv\in E\]
+\pagebreak
+
+\[z_B \ge 0 \quad \forall B \in \mathcal{O}\]
+\pagebreak
+
+\[\min \sum_{u \in V}y_u + \sum_{B \in \mathcal{O}} \frac{\vert B \vert - 1}{2}z_B\]
+\pagebreak
+
+\[ y_u + y_v + \sum_{B \in \mathcal{O}, uv \in \gamma(B)}z_B \ge w_{uv} \quad \forall uv\in E\]
+\pagebreak
+
+$ O(nm\log(n)) $
+\pagebreak
+
+$ O(nm+n^2\log(n)) $
+\pagebreak
+
+$ O(nm) $
+\pagebreak
+
+$O(n^2\sqrt{m})$
+\pagebreak
+
+$ 2^{19937} - 1 $
+\pagebreak
+
+\[ \frac{e^{-\lambda}\lambda^k}{k!} \]
+\pagebreak
+
+\end{document}

@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+..//lemon/dim2.h
+iostream
+-
+algorithm
+-
+
+/home/yuanzhou/mcfAuction/LEMON/test/dim_test.cc
+lemon/dim2.h
+-
+iostream
+-
+test_tools.h
+/home/yuanzhou/mcfAuction/LEMON/test/test_tools.h
+
+/home/yuanzhou/mcfAuction/LEMON/test/test_tools.h
+iostream
+-
+stdlib.h
+-
+

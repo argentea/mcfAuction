@@ -1,0 +1,5 @@
+<map id="SoplexLp" name="SoplexLp">
+<area shape="rect" id="node1" title="Interface for the SOPLEX solver." alt="" coords="5,155,87,181"/>
+<area shape="rect" id="node2" href="$a03405.html" title="Common base class for LP solvers." alt="" coords="7,80,85,107"/>
+<area shape="rect" id="node3" href="$a03341.html" title="Common base class for LP and MIP solvers." alt="" coords="11,5,81,32"/>
+</map>

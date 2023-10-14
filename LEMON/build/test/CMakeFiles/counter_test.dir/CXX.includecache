@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+..//lemon/counter.h
+string
+-
+iostream
+-
+
+..//test/test_tools.h
+iostream
+-
+stdlib.h
+-
+
+/home/yuanzhou/mcfAuction/LEMON/test/counter_test.cc
+lemon/counter.h
+-
+vector
+-
+sstream
+-
+test/test_tools.h
+/home/yuanzhou/mcfAuction/LEMON/test/test/test_tools.h
+
